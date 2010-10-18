@@ -3,10 +3,8 @@
 require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'AcoClasses.php';
+
+use PHPAccessControl\AccessControledObject\Aco;
 
 class PHPAccessControl_Specification_InMemoryInheritanceListTest extends PHPUnit_Framework_TestCase
 {
@@ -21,8 +19,8 @@ class PHPAccessControl_Specification_InMemoryInheritanceListTest extends PHPUnit
 	public function keepsTrackOfAddedParent()
 	{
 		// given
-		$child = CreateAco::name('catX');
-		$parent = CreateAco::name('catY');
+		$child = new Aco('catX');
+		$parent = new Aco('catY');
 		$this->inheritanceList->addParent($parent, $child);
 
 		// when
@@ -38,8 +36,8 @@ class PHPAccessControl_Specification_InMemoryInheritanceListTest extends PHPUnit
 	public function storesParentOnlyOnce()
 	{
 		// given
-		$child = CreateAco::name('catX');
-		$parent = CreateAco::name('catY');
+		$child = new Aco('catX');
+		$parent = new Aco('catY');
 		$this->inheritanceList->addParent($parent, $child);
 		$this->inheritanceList->addParent($parent, $child);
 
@@ -56,9 +54,9 @@ class PHPAccessControl_Specification_InMemoryInheritanceListTest extends PHPUnit
 	public function multipleParentsCanBeSpecified()
 	{
 		// given
-		$child = CreateAco::name('catX');
-		$parentA = CreateAco::name('catY');
-		$parentB = CreateAco::name('catZ');
+		$child = new Aco('catX');
+		$parentA = new Aco('catY');
+		$parentB = new Aco('catZ');
 		$this->inheritanceList->addParent($parentA, $child);
 		$this->inheritanceList->addParent($parentB, $child);
 
@@ -75,9 +73,9 @@ class PHPAccessControl_Specification_InMemoryInheritanceListTest extends PHPUnit
 	public function retrievesAllParentsRecursiveInTree()
 	{
 		// given
-		$child = CreateAco::name('child');
-		$parent = CreateAco::name('parent');
-		$greatParent = CreateAco::name('greatParent');
+		$child = new Aco('child');
+		$parent = new Aco('parent');
+		$greatParent = new Aco('greatParent');
 		$this->inheritanceList->addParent($greatParent, $parent);
 		$this->inheritanceList->addParent($parent, $child);
 
@@ -94,9 +92,9 @@ class PHPAccessControl_Specification_InMemoryInheritanceListTest extends PHPUnit
 	public function circularInheritanceDoesNotCauseTheSkyToFallDown()
 	{
 		// given
-		$acoX = CreateAco::name('x');
-		$acoY = CreateAco::name('y');
-		$acoZ = CreateAco::name('z');
+		$acoX = new Aco('x');
+		$acoY = new Aco('y');
+		$acoZ = new Aco('z');
 		$this->inheritanceList->addParent($acoX, $acoY);
 		$this->inheritanceList->addParent($acoY, $acoZ);
 		$this->inheritanceList->addParent($acoZ, $acoX);
@@ -117,8 +115,8 @@ class PHPAccessControl_Specification_InMemoryInheritanceListTest extends PHPUnit
 	 */
 	public function specificationDoesNotInheritFromItsOwn()
 	{
-				// given
-		$acoX = CreateAco::name('x');
+		// given
+		$acoX = new Aco('x');
 		$this->inheritanceList->addParent($acoX, $acoX);
 
 		// when

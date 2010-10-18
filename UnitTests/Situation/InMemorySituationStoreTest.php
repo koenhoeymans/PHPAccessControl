@@ -4,15 +4,8 @@ require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'SituationClasses.php';
-
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'RuleClasses.php';
+use PHPAccessControl\UnitTests\Support\Situation;
+use PHPAccessControl\UnitTests\Support\CreateRule;
 
 class PHPAccessControl_Situation_InMemorySituationStoreTest extends PHPUnit_Framework_TestCase
 {
@@ -26,10 +19,10 @@ class PHPAccessControl_Situation_InMemorySituationStoreTest extends PHPUnit_Fram
 	 */
 	public function addSituation()
 	{
-		$this->store->add(UserViewPost::create());
+		$this->store->add(Situation::UserViewPost());
 		foreach ($this->store as $situation)
 		{
-			if ($situation != UserViewPost::create()) $this->fail();
+			if ($situation != Situation::UserViewPost()) $this->fail();
 		}
 	}
 
@@ -38,10 +31,10 @@ class PHPAccessControl_Situation_InMemorySituationStoreTest extends PHPUnit_Fram
 	 */
 	public function listensForNewlyAddedRulesToAddSituations()
 	{
-		$this->store->notifyRuleAdded(CreateRule::allow(UserViewPost::create()));
+		$this->store->notifyRuleAdded(CreateRule::allow(Situation::UserViewPost()));
 		foreach ($this->store as $situation)
 		{
-			if ($situation != UserViewPost::create()) $this->fail();
+			if ($situation != Situation::UserViewPost()) $this->fail();
 		}
 	}
 }

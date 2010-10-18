@@ -4,32 +4,13 @@ require_once('TestHelper.php');
 
 /**
  * Takes the example in the Zend Framework ACL documentation as a use case.
- *
+ * See http://framework.zend.com/manual/en/zend.acl.html (version 1.10)
  */
 class usageAsRoleBasedAccessControl extends PHPUnit_Framework_TestCase
 {
 	public function setup()
 	{
-		$specificationInheritanceList = new \PHPAccessControl\Specification\InMemoryInheritanceList();
-
-		$situationStore = new \PHPAccessControl\Situation\InMemorySituationStore();
-
-		$ruleList = new \PHPAccessControl\Rule\InMemoryRuleList();
-		$ruleFinder = new \PHPAccessControl\Rule\SimpleRuleFinder($ruleList);
-
-		$permissionResolver = new \PHPAccessControl\AccessControl\AlgorithmicPermissionResolver($ruleFinder);
-		$conditionResolver = new \PHPAccessControl\AccessControl\AcoConditionResolver(
-			$permissionResolver, $situationStore
-		);
-
-		$ruleList->addObserver($situationStore);
- 
-		$this->accessControl = new \PHPAccessControl\PHPAccessControl(
-			$permissionResolver,
-			$conditionResolver,
-			$ruleList,
-			$specificationInheritanceList
-		);
+		$this->accessControl = \PHPAccessControl\EndToEndTests\Setup\SetupCreator::create();
 	}
 
 	/**

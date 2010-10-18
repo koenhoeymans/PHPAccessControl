@@ -2,7 +2,6 @@
 
 namespace PHPAccessControl;
 
-
 use PHPAccessControl\Specification\Specification;
 use	PHPAccessControl\Property\Property;
 use	PHPAccessControl\Action\Action;
@@ -63,8 +62,7 @@ class PHPAccessControl
 
 	public function a($name)
 	{
-		$propertyList = new \PHPAccessControl\Property\PropertyList();
-		return new AccessControledObject\Aco($name, $propertyList);
+		return new AccessControledObject\Aco($name);
 	}
 
 	public function to($action)
@@ -115,5 +113,3 @@ class PHPAccessControl
 		return new Situation\Situation($subject, $action, $object);
 	}
 }
-
-?>

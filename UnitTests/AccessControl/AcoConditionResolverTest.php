@@ -5,16 +5,12 @@ use PHPAccessControl\AccessControl\AcoConditionResolver;
 require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'Dsl.php';
 
 class PHPAccessControl_AcoConditionResolverTest extends PHPUnit_Framework_TestCase
 {
 	public function setup()
 	{
-		$this->dsl = new Dsl();
+		$this->dsl = new \PHPAccessControl\UnitTests\Support\Dsl();
 		$this->permissionResolver = $this->getMock(
 			'\\PHPAccessControl\\AccessControl\\PermissionResolver'
 		);
@@ -28,7 +24,7 @@ class PHPAccessControl_AcoConditionResolverTest extends PHPUnit_Framework_TestCa
 	/**
 	 * @test
 	 */
-	public function noConditionsWhenRulesDontContainAcosThatAreFurtherSpecified()
+	public function noAccessConditionsWhenRulesDontContainAcosThatAreFurtherSpecified()
 	{
 		$dsl = $this->dsl;
 

@@ -4,10 +4,8 @@ require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'SpecificationClasses.php';
+use PHPAccessControl\UnitTests\Support\Situation;
+use PHPAccessControl\Rule\SituationBasedRule;
 
 class PHPAccessControl_Rule_SituationBasedRuleTest extends PHPUnit_Framework_TestCase
 {
@@ -16,7 +14,7 @@ class PHPAccessControl_Rule_SituationBasedRuleTest extends PHPUnit_Framework_Tes
 	 */
 	public function tellsSpecificationIsAllowed()
 	{
-		$rule = new PHPAccessControl\Rule\SituationBasedRule(UserViewPost::create(), true);
+		$rule = new SituationBasedRule(Situation::UserViewPost(), true);
 		$this->assertTrue($rule->isAllowed());
 	}
 
@@ -25,7 +23,7 @@ class PHPAccessControl_Rule_SituationBasedRuleTest extends PHPUnit_Framework_Tes
 	 */
 	public function tellsSpecificationIsDenied()
 	{
-		$rule = new PHPAccessControl\Rule\SituationBasedRule(UserViewPost::create(), false);
+		$rule = new SituationBasedRule(Situation::UserViewPost(), false);
 		$this->assertFalse($rule->isAllowed());
 	}
 
@@ -34,8 +32,8 @@ class PHPAccessControl_Rule_SituationBasedRuleTest extends PHPUnit_Framework_Tes
 	 */
 	public function canDetermineIfItAppliesToASpecification()
 	{
-		$rule = new PHPAccessControl\Rule\SituationBasedRule(UserViewPost::create(), true);
-		$this->assertTrue($rule->appliesTo(UserViewPost::withCategoryIdEquals5()));
-		$this->assertTrue($rule->appliesTo(UserViewPost::withWordCountGreaterThan100()));
+		$rule = new SituationBasedRule(Situation::UserViewPost(), true);
+		$this->assertTrue($rule->appliesTo(Situation::UserViewPostWithCategoryIdEquals5()));
+		$this->assertTrue($rule->appliesTo(Situation::UserViewPostWithWordCountGreaterThan100()));
 	}
 }

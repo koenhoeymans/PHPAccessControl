@@ -16,6 +16,12 @@ class Property extends \PHPAccessControl\Specification\LeafSpecification
 		$this->specification = $specification;
 	}
 
+	public static function named($name)
+	{
+		$class = get_called_class();
+		return new $class($name);
+	}
+
 	private function createPropertyWith(\PHPAccessControl\Specification\Specification $specification)
 	{
 		if ($this->specification !== null)
@@ -27,11 +33,14 @@ class Property extends \PHPAccessControl\Specification\LeafSpecification
 
 	protected function isSpecialCaseOfProperty(Property $property)
 	{
-		if ($property->name !== $this->name)
+		if ($this->specification)
 		{
-			return false;
+			if(!$this->specification->isSpecialCaseOf($property->specification))
+			{
+				return false;
+			}
 		}
-		return $this->specification->isSpecialCaseOf($property->specification);
+		return $this->name === $property->name;
 	}
 
 	protected function isGeneralizationOfProperty(Property $property)

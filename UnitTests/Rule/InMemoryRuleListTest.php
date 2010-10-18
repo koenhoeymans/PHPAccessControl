@@ -3,14 +3,9 @@
 require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'SituationClasses.php';
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'RuleClasses.php';
+
+use PHPAccessControl\UnitTests\Support\CreateRule;
+use \PHPAccessControl\UnitTests\Support\Situation;
 
 class PHPAccessControl_Rule_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 {
@@ -29,8 +24,9 @@ class PHPAccessControl_Rule_InMemoryRuleListTest extends PHPUnit_Framework_TestC
 		$mockObserver
 			->expects($this->once())
 			->method('notifyRuleAdded')
-			->with($this->equalTo(CreateRule::allow(UserViewPost::create())));
+			->with($this->equalTo(CreateRule::allow(Situation::UserViewPost()))
+			);
 		$this->ruleList->addObserver($mockObserver);
-		$this->ruleList->addRule(CreateRule::allow(UserViewPost::create()));
+		$this->ruleList->addRule(CreateRule::allow(Situation::UserViewPost()));
 	}
 }

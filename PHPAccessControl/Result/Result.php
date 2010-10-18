@@ -33,5 +33,3 @@ class Result
 		return $this->specification;
 	}
 }
-
-?>

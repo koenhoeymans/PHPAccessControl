@@ -2,24 +2,23 @@
 
 error_reporting(-1);
 
-$path = array(
-	dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
-	get_include_path()
-);
+require_once __DIR__
+	. DIRECTORY_SEPARATOR . '..'
+	. DIRECTORY_SEPARATOR . 'PHPAccessControl'
+	. DIRECTORY_SEPARATOR . 'Autoload.php';
 
-set_include_path(implode(PATH_SEPARATOR, $path));
-
-function __autoload($className)
+function PHPAccessControl_EndToEndTests_Autoload($className)
 {
-	$classNameFile = dirname(__FILE__)
+	$classNameFile = __DIR__
 		. DIRECTORY_SEPARATOR . '..'
-		. DIRECTORY_SEPARATOR
-		. str_replace('\\', DIRECTORY_SEPARATOR, $className)
+		. DIRECTORY_SEPARATOR . '..'
+		. DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $className)
 		. '.php';
+
 	if (file_exists($classNameFile))
 	{
-		require_once($classNameFile);
+		require_once $classNameFile;
 	}
 }
 
-?>
+spl_autoload_register('PHPAccessControl_EndToEndTests_Autoload');

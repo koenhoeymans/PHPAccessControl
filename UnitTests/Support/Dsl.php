@@ -1,5 +1,7 @@
 <?php
 
+namespace PHPAccessControl\UnitTests\Support;
+
 class Dsl
 {
 	public function situation(

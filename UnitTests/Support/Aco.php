@@ -1,10 +1,10 @@
 <?php
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'PropertyClasses.php';
+namespace PHPAccessControl\UnitTests\Support;
 
-class CreateAco
+class Aco
 {
-	static public function name($name)
+	static public function named($name)
 	{
 		return new \PHPAccessControl\AccessControledObject\Aco($name);
 	}

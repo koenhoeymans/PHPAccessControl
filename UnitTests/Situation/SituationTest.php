@@ -3,10 +3,8 @@
 require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'SituationClasses.php';
+
+use PHPAccessControl\UnitTests\Support\Situation;
 
 class PHPAccessControl_Situation_SituationTest extends PHPUnit_Framework_TestCase
 {
@@ -15,7 +13,15 @@ class PHPAccessControl_Situation_SituationTest extends PHPUnit_Framework_TestCas
 	 */
 	public function isSpecialCaseOfSituationIfSubjectAndObjectAreSpecialCasesAndTheActionIsTheSame()
 	{
-		$this->assertTrue(UserViewPost::withCategoryIdEquals5()->isSpecialCaseOf(UserViewPost::create()));
-		$this->assertFalse(UserViewPost::create()->isSpecialCaseOf(UserViewPost::withCategoryIdEquals5()));
+		$this->assertTrue(
+			Situation::UserViewPostWithCategoryIdEquals5()->isSpecialCaseOf(
+				Situation::UserViewPost()
+			)
+		);
+		$this->assertFalse(
+			Situation::UserViewPost()->isSpecialCaseOf(
+				Situation::UserViewPostWithCategoryIdEquals5()
+			)
+		);
 	}
 }

@@ -3,14 +3,9 @@
 require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'SituationClasses.php';
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'RuleClasses.php';
+
+use \PHPAccessControl\UnitTests\Support\CreateRule;
+use \PHPAccessControl\UnitTests\Support\Situation;
 
 class PHPAccessControl_Rule_SimpleRuleFinderTest extends PHPUnit_Framework_TestCase
 {
@@ -18,7 +13,9 @@ class PHPAccessControl_Rule_SimpleRuleFinderTest extends PHPUnit_Framework_TestC
 	{
 		$this->situationStore = new \PHPAccessControl\Situation\InMemorySituationStore();
 		$this->ruleList = new \PHPAccessControl\Rule\InMemoryRuleList();
-		$this->ruleFinder = new \PHPAccessControl\Rule\SimpleRuleFinder($this->ruleList, $this->situationStore);
+		$this->ruleFinder = new \PHPAccessControl\Rule\SimpleRuleFinder(
+			$this->ruleList, $this->situationStore
+		);
 	}
 
 	/**
@@ -27,12 +24,12 @@ class PHPAccessControl_Rule_SimpleRuleFinderTest extends PHPUnit_Framework_TestC
 	public function mostSpecificMatchingRulesAreTheOnesWithSameSituation()
 	{
 		// given
-		$rule = CreateRule::allow(UserViewPost::create());
-		$this->ruleList->addRule(CreateRule::allow(UserViewPost::create()));
+		$rule = CreateRule::allow(Situation::UserViewPost());
+		$this->ruleList->addRule($rule);
 
 		// when
 		$mostSpecificMatchingRules = $this->ruleFinder->findMostSpecificMatchingRulesFor(
-			UserViewPost::create()
+			Situation::UserViewPost()
 		);
 
 		// then
@@ -45,12 +42,12 @@ class PHPAccessControl_Rule_SimpleRuleFinderTest extends PHPUnit_Framework_TestC
 	public function mostSpecificMatchingRulesAreTheOnesWithMoreGeneralSituationIfNoneWithSameSituation()
 	{
 		// given
-		$rule = CreateRule::allow(UserViewPost::create());
+		$rule = CreateRule::allow(Situation::UserViewPost());
 		$this->ruleList->addRule($rule);
 
 		// when
 		$mostSpecificMatchingRules = $this->ruleFinder->findMostSpecificMatchingRulesFor(
-			UserViewPost::withCategoryIdEquals5()
+			Situation::UserViewPostWithCategoryIdEquals5()
 		);
 
 		// then

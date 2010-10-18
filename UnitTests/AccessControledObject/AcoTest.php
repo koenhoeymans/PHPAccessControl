@@ -1,15 +1,35 @@
 <?php
 
+use PHPAccessControl\Property\Property;
 require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'Support'
-	. DIRECTORY_SEPARATOR . 'AcoClasses.php';
+
+use \PHPAccessControl\AccessControledObject\Aco;
+use \PHPAccessControl\Property\PropertyDSL as aProperty;
 
 class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_TestCase
 {
+	/**
+	 * @test
+	 */
+	public function staticConstructorProvidesHigherLevelDSL()
+	{
+		$postWithNew = Aco::named('post');
+		$postWithStatic = Aco::named('post');
+		$this->assertEquals($postWithNew, $postWithStatic);
+	}
+
+	/**
+	 * @test
+	 */
+	public function staticConstructorForTheAnyAcoProvidesHigherLevelDSL()
+	{
+		$anyAcoInstantiadedWithNew = new Aco();
+		$anyAcoWithStatic = Aco::any();
+		$this->assertEquals($anyAcoInstantiadedWithNew, $anyAcoWithStatic);
+	}
+
 	//------------------- is special case of / generalization of -------------------//
 
 	/**
@@ -17,8 +37,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function anAcoIsSpecialCaseOfTheAnyAco()
 	{
-		$post = CreateAco::name('post');
-		$anyAco = new \PHPAccessControl\AccessControledObject\Aco();
+		$post = new Aco('post');
+		$anyAco = new Aco();
 		$this->assertTrue($post->isSpecialCaseOf($anyAco));
 		$this->assertFalse($anyAco->isSpecialCaseOf($post));
 	}
@@ -28,8 +48,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function theAnyAcoIsMoreGeneralThanAco()
 	{
-		$post = CreateAco::name('post');
-		$anyAco = new \PHPAccessControl\AccessControledObject\Aco();
+		$post = new Aco('post');
+		$anyAco = new Aco();
 		$this->assertTrue($anyAco->isGeneralizationOf($post));
 		$this->assertFalse($post->isGeneralizationOf($anyAco));		
 	}
@@ -39,8 +59,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function acoWithDifferentNameIsNotSpecialCase()
 	{
-		$post = createAco::name('post');
-		$category = createAco::name('category');
+		$post = new Aco('post');
+		$category = new Aco('category');
 		$this->assertFalse($post->isSpecialCaseOf($category));
 	}
 
@@ -49,8 +69,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function twoIdenticalAcosAreSpecialCasesOfEachOther()
 	{
-		$aco1 = createAco::postWithCategoryIdEquals5();
-		$aco2 = createAco::postWithCategoryIdEquals5();
+		$aco1 = Aco::named('post')->with(Property::named('category'));
+		$aco2 = Aco::named('post')->with(Property::named('category'));
 		$this->assertTrue($aco1->isSpecialCaseOf($aco2));
 	}
 
@@ -59,8 +79,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function twoIdenticalAcosAreGeneralizationsOfEachOther()
 	{
-		$aco1 = createAco::postWithCategoryIdEquals5();
-		$aco2 = createAco::postWithCategoryIdEquals5();
+		$aco1 = Aco::named('post')->with(Property::named('category'));
+		$aco2 = Aco::named('post')->with(Property::named('category'));
 		$this->assertTrue($aco1->isGeneralizationOf($aco2));
 	}
 
@@ -69,8 +89,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function anAcoIsMoreSpecificWhenSameNamePlusSpecification()
 	{
-		$aco1 = createAco::name('post');
-		$aco2 = createAco::postWithCategoryIdEquals5(); 
+		$aco1 = Aco::named('post');
+		$aco2 = Aco::named('post')->with(aProperty::named('category')->equals(5));
 		$this->assertFalse($aco1->isSpecialCaseOf($aco2));
 		$this->assertTrue($aco2->isSpecialCaseOf($aco1));
 	}
@@ -80,8 +100,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function anAcoIsMoreSpecificWhenSameNameAndSpecificationPlusExtraSpecification()
 	{
-		$aco1 = createAco::postWithCategoryIdEquals5();
-		$aco2 = createAco::postWithCategoryIdEquals5AndWordCountGreaterThan100(); 
+		$aco1 = Aco::named('post')->with(aProperty::named('category'));
+		$aco2 = Aco::named('post')->with(aProperty::named('category')->lAnd(aProperty::named('wordcount'))); 
 		$this->assertFalse($aco1->isSpecialCaseOf($aco2));
 		$this->assertTrue($aco2->isSpecialCaseOf($aco1));
 	}
@@ -91,8 +111,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function anAcoWithPropertyIsMoreSpecificThanAcoWithSameButMoreSpecificProperty()
 	{
-		$postWithWordcountGt100 = createAco::postWithWordCountGreaterThan(100);
-		$postWithWordcountGt150 = createAco::postWithWordCountGreaterThan(150); 
+		$postWithWordcountGt150 = Aco::named('post')->with(aProperty::named('wordcount')->greaterThan(150));
+		$postWithWordcountGt100 = Aco::named('post')->with(aProperty::named('wordcount')->greaterThan(100));
 		$this->assertTrue($postWithWordcountGt150->isSpecialCaseOf($postWithWordcountGt100));
 	}
 
@@ -101,10 +121,12 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function anAcoIsASpecialCaseOfACompositeOrAco()
 	{
+		$postWithWordCountGt100 = Aco::named('post')->with(aProperty::named('wordcount')->greaterThan(100));
+		$postWithWordCountGt100AndCatId5 = Aco::named('post')->with(
+			aProperty::named('wordcount')->greaterThan(100)->lOr(aProperty::named('categoryId')->equals(5))
+		);
 		$this->assertTrue(
-			createAco::postWithWordCountGreaterThan(100)->isSpecialCaseOf(
-				createAco::postWithCategoryIdEquals5()->lOr(createAco::postWithWordCountGreaterThan(100))
-			)
+			$postWithWordCountGt100->isSpecialCaseOf($postWithWordCountGt100AndCatId5)
 		);
 	}
 }

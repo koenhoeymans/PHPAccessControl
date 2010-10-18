@@ -5,9 +5,34 @@ namespace PHPAccessControl\Situation;
 use PHPAccessControl\Rule\SituationBasedRule;
 use	PHPAccessControl\Rule\RuleListObserver;
 
-class InMemorySituationStore implements SituationStore, RuleListObserver
+class InMemorySituationStore implements SituationStore, RuleListObserver, \Iterator
 {
 	private $situations = array();
+
+	public function rewind()
+	{
+		reset($this->situations);
+	}
+
+	public function current()
+	{
+		return current($this->situations);
+	}
+
+	public function key()
+	{
+		return key($this->situations);
+	}
+
+	public function next()
+	{
+		next($this->situations);
+	}
+
+	public function valid()
+	{
+		return key($this->situations) !== null;
+	}
 
 	public function notifyRuleAdded(SituationBasedRule $rule)
 	{

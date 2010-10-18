@@ -12,18 +12,27 @@ class Aco extends \PHPAccessControl\Specification\LeafSpecification
 
 	private $name;
 
-	private $properties;
+	private $specifications = array();
 
 	public function __construct($name = self::ANY_ACO)
 	{
 		$this->name = $name;
-		$this->properties = new PropertyList();
 	}
 
-	public function with(Specification $property)
+	public static function named($name)
+	{
+		return new self($name);
+	}
+
+	public static function any()
+	{
+		return new self();
+	}
+
+	public function with(Specification $specification)
 	{
 		$copy = clone $this;
-		$copy->properties->add($property);
+		$copy->specifications[] = $specification;
 		return $copy;
 	}
 
@@ -40,18 +49,18 @@ class Aco extends \PHPAccessControl\Specification\LeafSpecification
 		}
 
 		// every property of $aco must be a generalization of $this properties
-		foreach ($aco->properties as $otherProperty)
+		foreach ($aco->specifications as $otherSpecification)
 		{
-			$otherPropertyGeneralization = false;
-			foreach ($this->properties as $ownProperty)
+			$otherSpecificationGeneralization = false;
+			foreach ($this->specifications as $ownSpecification)
 			{
-				if ($otherProperty->isGeneralizationOf($ownProperty))
+				if ($otherSpecification->isGeneralizationOf($ownSpecification))
 				{
-					$otherPropertyGeneralization = true;
+					$otherSpecificationGeneralization = true;
 					break;
 				}
 			}
-			if (!$otherPropertyGeneralization)
+			if (!$otherSpecificationGeneralization)
 			{
 				return false;
 			}
@@ -63,5 +72,19 @@ class Aco extends \PHPAccessControl\Specification\LeafSpecification
 	public function isGeneralizationOfAco(Aco $aco)
 	{
 		return $aco->isSpecialCaseOf($this);
+	}
+
+	/**
+	 * @credit: http://www.php.net/manual/en/language.oop5.cloning.php#87066
+	 */
+	function __clone()
+	{
+		foreach ($this as $key => $val)
+		{
+			if (is_object($val) || (is_array($val)))
+			{
+				$this->{$key} = unserialize(serialize($val));
+			}
+		}
 	}
 }

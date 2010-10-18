@@ -1,5 +1,7 @@
 <?php
 
+namespace PHPAccessControl\UnitTests\Support;
+
 class CreateRule
 {
 	static public function allow(
