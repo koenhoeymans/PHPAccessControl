@@ -15,18 +15,15 @@ class PHPAccessControl
 {
 	private $permissionResolver;
 
-	private $conditionResolver;
-
 	private $ruleList;
 
 	private $acoInheritanceList;
 
 	public function __construct(
-		PermissionResolver $permissionResolver, ConditionResolver $conditionResolver,
-		RuleList $ruleList, InheritanceList $specificationInheritanceList
+		PermissionResolver $permissionResolver, RuleList $ruleList,
+		InheritanceList $specificationInheritanceList
 	) {
 		$this->permissionResolver = $permissionResolver;
-		$this->conditionResolver = $conditionResolver;
 		$this->ruleList = $ruleList;
 		$this->specificationInheritanceList = $specificationInheritanceList;
 	}
@@ -46,7 +43,7 @@ class PHPAccessControl
 		}
 		$specification = $this->createSituation($subject, $action, $object);
 		$allowed = $this->permissionResolver->isAllowedByInheritance($specification);
-		$conditions = $this->conditionResolver->buildAccessConditionsFor($specification);
+		$conditions = $this->permissionResolver->buildAccessConditionsFor($specification);
 		return new Result\Result($allowed, $conditions);
 	}
 
