@@ -7,7 +7,6 @@ use	PHPAccessControl\Property\Property;
 use	PHPAccessControl\Action\Action;
 use	PHPAccessControl\Action\AnyAction;
 use	PHPAccessControl\AccessControl\PermissionResolver;
-use	PHPAccessControl\AccessControl\ConditionResolver;
 use	PHPAccessControl\Rule\RuleList;
 use PHPAccessControl\Specification\InheritanceList;
 

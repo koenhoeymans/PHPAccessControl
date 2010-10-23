@@ -7,4 +7,8 @@ interface PermissionResolver
 	public function isAllowedByInheritance(
 		\PHPAccessControl\Situation\Situation $situation
 	);
+
+	public function buildAccessConditionsFor(
+		\PHPAccessControl\Situation\Situation $situation
+	);
 }
