@@ -8,13 +8,6 @@ use PHPAccessControl\Action\Action;
 
 class Situation
 {
-	public static function adminEditContent()
-	{
-		return new \PHPAccessControl\Situation\Situation(
-			Aco::named('admin'), new Action('edit'), Aco::named('content')
-		);
-	}
-
 	public static function userViewPost()
 	{
 		return new \PHPAccessControl\Situation\Situation(

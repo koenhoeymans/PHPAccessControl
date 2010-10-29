@@ -136,6 +136,7 @@ class PHPAccessControlTest extends PHPUnit_Framework_TestCase
 			$ac->to('view'),
 			$ac->a('post')->with($ac->property('postcount')->equals(2))
 		);
+
 		$this->assertFalse($result->isAllowed());
 
 		$result = $ac->checkPermissionOf(

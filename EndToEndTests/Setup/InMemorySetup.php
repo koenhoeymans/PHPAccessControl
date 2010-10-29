@@ -8,17 +8,12 @@ class InMemorySetup
 	{
 		$specificationInheritanceList = new \PHPAccessControl\Specification\InMemoryInheritanceList();
 
-		$situationStore = new \PHPAccessControl\Situation\InMemorySituationStore();
-
-		$ruleList = new \PHPAccessControl\Rule\InMemoryRuleList();
-		$ruleFinder = new \PHPAccessControl\Rule\SimpleRuleFinder($ruleList);
+		$ruleList = new \PHPAccessControl\AccessControl\InMemoryPermissionList();
 
 		$permissionResolver = new \PHPAccessControl\AccessControl\AlgorithmicPermissionResolver(
-			$ruleFinder, $situationStore
+			$ruleList
 		);
 
-		$ruleList->addObserver($situationStore);
- 
 		return new \PHPAccessControl\PHPAccessControl(
 			$permissionResolver,
 			$ruleList,

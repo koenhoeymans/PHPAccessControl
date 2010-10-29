@@ -22,15 +22,6 @@ class Property extends \PHPAccessControl\Specification\LeafSpecification
 		return new $class($name);
 	}
 
-	private function createPropertyWith(\PHPAccessControl\Specification\Specification $specification)
-	{
-		if ($this->specification !== null)
-		{
-			$specification = $this->specification->lAnd();
-		}
-		return new self($this->name, $specification);
-	}
-
 	protected function isSpecialCaseOfProperty(Property $property)
 	{
 		if ($this->specification)

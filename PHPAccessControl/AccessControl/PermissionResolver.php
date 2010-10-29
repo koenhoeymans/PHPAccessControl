@@ -4,7 +4,7 @@ namespace PHPAccessControl\AccessControl;
 
 interface PermissionResolver
 {
-	public function isAllowedByInheritance(
+	public function isAllowed(
 		\PHPAccessControl\Situation\Situation $situation
 	);
 

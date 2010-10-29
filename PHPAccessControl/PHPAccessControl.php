@@ -7,23 +7,23 @@ use	PHPAccessControl\Property\Property;
 use	PHPAccessControl\Action\Action;
 use	PHPAccessControl\Action\AnyAction;
 use	PHPAccessControl\AccessControl\PermissionResolver;
-use	PHPAccessControl\Rule\RuleList;
+use	PHPAccessControl\AccessControl\PermissionList;
 use PHPAccessControl\Specification\InheritanceList;
 
 class PHPAccessControl
 {
 	private $permissionResolver;
 
-	private $ruleList;
+	private $permissionList;
 
 	private $acoInheritanceList;
 
 	public function __construct(
-		PermissionResolver $permissionResolver, RuleList $ruleList,
+		PermissionResolver $permissionResolver, PermissionList $permissionList,
 		InheritanceList $specificationInheritanceList
 	) {
 		$this->permissionResolver = $permissionResolver;
-		$this->ruleList = $ruleList;
+		$this->permissionList = $permissionList;
 		$this->specificationInheritanceList = $specificationInheritanceList;
 	}
 
@@ -41,7 +41,7 @@ class PHPAccessControl
 			$object = $object->lAnd($parent);
 		}
 		$specification = $this->createSituation($subject, $action, $object);
-		$allowed = $this->permissionResolver->isAllowedByInheritance($specification);
+		$allowed = $this->permissionResolver->isAllowed($specification);
 		$conditions = $this->permissionResolver->buildAccessConditionsFor($specification);
 		return new Result\Result($allowed, $conditions);
 	}
@@ -100,7 +100,8 @@ class PHPAccessControl
 		$allowed, Specification $subject, Action $action, Specification $object
 	) {
 		$situation = $this->createSituation($subject, $action, $object);
-		$this->ruleList->addRule(new Rule\SituationBasedRule($situation, $allowed));
+		$method = $allowed ? 'allow' : 'deny';
+		$this->permissionList->$method($situation);
 	}
 
 	private function createSituation(

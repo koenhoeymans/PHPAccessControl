@@ -4,27 +4,20 @@ require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
 
-use PHPAccessControl\UnitTests\Support\Aco;
-use PHPAccessControl\UnitTests\Support\CreateRule;
+use PHPAccessControl\AccessControledObject\Aco;
 use PHPAccessControl\UnitTests\Support\Situation;
 use PHPAccessControl\Property\PropertyDSL as Property;
 
 /**
- * @todo http://groups.google.com/group/growing-object-oriented-software/msg/c2acdb54f75a6cba
- * don't use mocks here but fake implementation?
- * 
+ * http://groups.google.com/group/growing-object-oriented-software/msg/c2acdb54f75a6cba
  */
 class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framework_TestCase
 {
 	public function setup()
 	{
-		$this->situationStore = $this->getMock('PHPAccessControl\\Situation\\SituationStore');
-
-		$this->ruleFinder = $this->getMock('PHPAccessControl\\Rule\\RuleFinder');
-
+		$this->permissionList = new \PHPAccessControl\UnitTests\Support\PermissionListMock();
 		$this->permissionResolver = new \PHPAccessControl\AccessControl\AlgorithmicPermissionResolver(
-			$this->ruleFinder,
-			$this->situationStore
+			$this->permissionList
 		);
 	}
 
@@ -35,13 +28,8 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function specificationIsDeniedWhenThereIsNoMatchingRule()
 	{
-		$this->ruleFinder
-				->expects($this->once())
-				->method('findMostSpecificMatchingRulesFor')
-				->will($this->returnValue(array()));
-
 		$this->assertFalse(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPost())
+			$this->permissionResolver->isAllowed(Situation::userViewPost())
 		);
 	}
 
@@ -50,13 +38,10 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function isAllowedByInheritanceWhenMatchingAllowingRuleExists()
 	{
-		$this->ruleFinder
-			->expects($this->once())
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow(Situation::userViewPost()))));
+		$this->permissionList->allow(Situation::userViewPost());
 
 		$this->assertTrue(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPost())
+			$this->permissionResolver->isAllowed(Situation::userViewPost())
 		);
 	}
 
@@ -65,13 +50,10 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function isAllowedByInheritanceWhenMatchingDenyingRuleExists()
 	{
-		$this->ruleFinder
-			->expects($this->once())
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny(Situation::userViewPost()))));
+		$this->permissionList->deny(Situation::userViewPost());
 
 		$this->assertFalse(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPost())
+			$this->permissionResolver->isAllowed(Situation::userViewPost())
 		);
 	}
 
@@ -80,13 +62,13 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function isAllowedByInheritanceWhenNotAllowedNorDeniedButMoreGeneralSpecificationisAllowedByInheritance()
 	{
-		$this->ruleFinder
-			->expects($this->once())
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow(Situation::userViewPost()))));
+		$this->permissionList->allow(Situation::userViewPost());
+		$this->permissionList->addParent(
+			Situation::userViewPostWithCategoryIdEquals5(), Situation::userViewPost()
+		);
 
 		$this->assertTrue(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPostWithCategoryIdEquals5())
+			$this->permissionResolver->isAllowed(Situation::userViewPostWithCategoryIdEquals5())
 		);
 	}
 
@@ -95,16 +77,15 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function withMultipleLevelsOfAccessRightsTheClosestOneDeterminesInheritedPermission()
 	{
-		$rules = array(
-			CreateRule::deny(Situation::userViewPostWithCategoryIdEquals5())
+		$this->permissionList->allow(Situation::userViewPostWithCategoryIdEquals5());
+		$this->permissionList->deny(Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100());
+		$this->permissionList->addParent(
+			Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100(),
+			Situation::userViewPostWithCategoryIdEquals5()
 		);
-		$this->ruleFinder
-			->expects($this->once())
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue($rules));
 
 		$this->assertFalse(
-			$this->permissionResolver->isAllowedByInheritance(
+			$this->permissionResolver->isAllowed(
 				Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100()
 			)
 		);
@@ -113,19 +94,21 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	/**
 	 * @test
 	 */
-	public function allowedWinsFromDenied()
+	public function allowedWinsFromDeniedWhenCompetingPermissionsForParentSituations()
 	{
-		$rules = array(
-			CreateRule::deny(Situation::userViewPost()),
-			CreateRule::allow(Situation::userViewPost())
+		$this->permissionList->allow(Situation::userViewPostWithCategoryIdEquals5());
+		$this->permissionList->deny(Situation::userViewPostWithWordCountGreaterThan100());
+		$this->permissionList->addParent(
+			Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100(),
+			Situation::userViewPostWithCategoryIdEquals5()
 		);
-		$this->ruleFinder
-			->expects($this->once())
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue($rules));
+		$this->permissionList->addParent(
+			Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100(),
+			Situation::userViewPostWithWordCountGreaterThan100()
+		);
 
 		$this->assertTrue(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPost())
+			$this->permissionResolver->isAllowed(Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100())
 		);
 	}
 
@@ -136,15 +119,7 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function noAccessConditionsWhenRulesDontContainAcosThatAreFurtherSpecified()
 	{
-		$this->ruleFinder
-			->expects($this->once())
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array()));
-
-		$this->situationStore
-			->expects($this->once())
-			->method('getChildren')
-			->will($this->returnValue(array()));
+		$this->permissionList->allow(Situation::userViewPost());
 
 		$this->assertNull($this->permissionResolver->buildAccessConditionsFor(Situation::userViewPost()));
 	}
@@ -152,31 +127,19 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	/**
 	 * @test
 	 */
-	public function accessIsConditionalForSituationWithoutRuleWhenFurtherSpecifiedSituationExistsInAllowingRule()
+	public function accessIsConditionalForSituationWithoutRuleWhenFurtherSpecifiedSituationIsAllowed()
 	{
+		// given
 		$situation = Situation::userViewPost();
 		$childSituation = Situation::userViewPostWithWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array()));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($childSituation))));
+		$this->permissionList->allow($childSituation);
+		$this->permissionList->addParent($childSituation, $situation);
 
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($childSituation)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($situation);
 
+		// then
 		$this->assertEquals(
 			Aco::named('post')->with(Property::named('wordcount')->greaterThan(100)), $result
 		);
@@ -187,29 +150,18 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function accessIsNotConditionalForAllowedSituationAndAllowedSpecifyingSituation()
 	{
+		// given
 		$situation = Situation::userViewPost();
 		$childSituation = Situation::userViewPostWithWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($situation))));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($childSituation))));
+		$this->permissionList->allow($situation);
+		$this->permissionList->allow($childSituation);
+		$this->permissionList->addParent($childSituation, $situation);
 
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($childSituation)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($situation);
 
+		// then
 		$this->assertNull($result);
 	}
 
@@ -218,29 +170,18 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function accessIsNotConditionalForDeniedSituationAndDeniedSpecifyingSituation()
 	{
+		// given
 		$situation = Situation::userViewPost();
 		$childSituation = Situation::userViewPostWithWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($situation))));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($childSituation))));
+		$this->permissionList->deny($situation);
+		$this->permissionList->deny($childSituation);
+		$this->permissionList->addParent($childSituation, $situation);
 
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($childSituation)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($situation);
 
+		// then
 		$this->assertNull($result);
 	}
 
@@ -249,29 +190,18 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function accessIsConditionalForSituationAllowedButChildSituationDenied()
 	{
+		// given
 		$situation = Situation::userViewPost();
 		$childSituation = Situation::userViewPostWithWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($situation))));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($childSituation))));
+		$this->permissionList->allow($situation);
+		$this->permissionList->deny($childSituation);
+		$this->permissionList->addParent($childSituation, $situation);
 
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($childSituation)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($situation);
 
+		// then
 		$this->assertEquals(
 			Aco::named('post')->with(Property::named('wordcount')->greaterThan(100))->not(),
 			$result
@@ -283,50 +213,31 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function conditionalAccessForAllowedDeniedAllowed()
 	{
+		// given
 		$parentSituation = Situation::userViewPost();
 		$situation = Situation::userViewPostWithWordCountGreaterThan100();
 		$childSituation = Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($parentSituation))));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($situation))));
-		$this->ruleFinder
-			->expects($this->at(2))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($childSituation))));
+		$this->permissionList->allow($parentSituation);
+		$this->permissionList->deny($situation);
+		$this->permissionList->allow($childSituation);
+		$this->permissionList->addParent($childSituation, $situation);
+		$this->permissionList->addParent($situation, $parentSituation);
 
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($situation)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array($childSituation)));
-		$this->situationStore
-			->expects($this->at(2))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
-
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($parentSituation);
 
-		/**
-		 * @todo
-		 * -make this readable
-		 * -make this less brittle (eg order of Or shouldn't be important)
-		 */
-		$this->assertEquals(
-			Aco::named('post')->with(Property::named('wordcount')->greaterThan(100))->not()
-				->lOr(Aco::named('post')->with(
-					Property::named('categoryId')->equals(5)
-						->lAnd(Property::named('wordcount')->greaterThan(100)))),
-			$result
+		// then
+		$this->assertTrue(
+			$result->isEqualTo(
+				Aco::named('post')->with(Property::named('wordcount')->greaterThan(100))->not()
+					->lOr(
+				Aco::named('post')->with(
+							Property::named('categoryId')->equals(5)->lAnd(
+							Property::named('wordcount')->greaterThan(100))
+						)
+					)
+			)
 		);
 	}
 
@@ -335,38 +246,21 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function conditionalAccessForDeniedAllowedDenied()
 	{
+		// given
 		$parentSituation = Situation::userViewPost();
 		$situation = Situation::userViewPostWithWordCountGreaterThan100();
 		$childSituation = Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($parentSituation))));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($situation))));
-		$this->ruleFinder
-			->expects($this->at(2))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($childSituation))));
+		$this->permissionList->deny($parentSituation);
+		$this->permissionList->allow($situation);
+		$this->permissionList->deny($childSituation);
+		$this->permissionList->addParent($childSituation, $situation);
+		$this->permissionList->addParent($situation, $parentSituation);
 
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($situation)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array($childSituation)));
-		$this->situationStore
-			->expects($this->at(2))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($parentSituation);
 
+		// then
 		$this->assertEquals(
 			Aco::named('post')->with(Property::named('wordcount')->greaterThan(100))
 				->lAnd(
@@ -383,38 +277,21 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function conditionalAccessForAllowedAllowedDenied()
 	{
+		// given
 		$parentSituation = Situation::userViewPost();
 		$situation = Situation::userViewPostWithWordCountGreaterThan100();
 		$childSituation = Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($parentSituation))));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($situation))));
-		$this->ruleFinder
-			->expects($this->at(2))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($childSituation))));
-
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($situation)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array($childSituation)));
-		$this->situationStore
-			->expects($this->at(2))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
+		$this->permissionList->allow($parentSituation);
+		$this->permissionList->allow($situation);
+		$this->permissionList->deny($childSituation);
+		$this->permissionList->addParent($childSituation, $situation);
+		$this->permissionList->addParent($situation, $parentSituation);
+		
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($parentSituation);
 
+		// then
 		$this->assertEquals(
 			Aco::named('post')
 				->with(Property::named('categoryId')->equals(5)->lAnd(Property::named('wordcount')->greaterThan(100)))
@@ -428,38 +305,21 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function conditionalAccessForDeniedDeniedAllowed()
 	{
+		// given
 		$parentSituation = Situation::userViewPost();
 		$situation = Situation::userViewPostWithWordCountGreaterThan100();
 		$childSituation = Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($parentSituation))));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($situation))));
-		$this->ruleFinder
-			->expects($this->at(2))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($childSituation))));
+		$this->permissionList->deny($parentSituation);
+		$this->permissionList->deny($situation);
+		$this->permissionList->allow($childSituation);
+		$this->permissionList->addParent($childSituation, $situation);
+		$this->permissionList->addParent($situation, $parentSituation);
 
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($situation)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array($childSituation)));
-		$this->situationStore
-			->expects($this->at(2))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($parentSituation);
 
+		// then
 		$this->assertEquals(
 			Aco::named('post')
 				->with(Property::named('categoryId')->equals(5)->lAnd(Property::named('wordcount')->greaterThan(100))),
@@ -472,38 +332,21 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function conditionalAccessForDeniedAndTwoChildSituationsAllowed()
 	{
+		// given
 		$parentSituation = Situation::userViewPost();
 		$situationA = Situation::userViewPostWithCategoryIdEquals5();
 		$situationB = Situation::userViewPostWithWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($parentSituation))));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($situationA))));
-		$this->ruleFinder
-			->expects($this->at(2))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($situationB))));
+		$this->permissionList->deny($parentSituation);
+		$this->permissionList->allow($situationA);
+		$this->permissionList->allow($situationB);
+		$this->permissionList->addParent($situationA, $parentSituation);
+		$this->permissionList->addParent($situationB, $parentSituation);
 
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($situationA, $situationB)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-		$this->situationStore
-			->expects($this->at(2))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($parentSituation);
 
+		// then
 		$this->assertEquals(
 			Aco::named('post')->with(Property::named('categoryId')->equals(5))
 			->lOr(Aco::named('post')->with(Property::named('wordcount')->greaterThan(100))),
@@ -516,38 +359,21 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function conditionalAccessForAllowedAndTwoChildSituationsDenied()
 	{
+		// given
 		$parentSituation = Situation::userViewPost();
 		$situationA = Situation::userViewPostWithCategoryIdEquals5();
 		$situationB = Situation::userViewPostWithWordCountGreaterThan100();
 
-		$this->ruleFinder
-			->expects($this->at(0))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::allow($parentSituation))));
-		$this->ruleFinder
-			->expects($this->at(1))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($situationA))));
-		$this->ruleFinder
-			->expects($this->at(2))
-			->method('findMostSpecificMatchingRulesFor')
-			->will($this->returnValue(array(CreateRule::deny($situationB))));
+		$this->permissionList->allow($parentSituation);
+		$this->permissionList->deny($situationA);
+		$this->permissionList->deny($situationB);
+		$this->permissionList->addParent($situationA, $parentSituation);
+		$this->permissionList->addParent($situationB, $parentSituation);
 
-		$this->situationStore
-			->expects($this->at(0))
-			->method('getChildren')
-			->will($this->returnValue(array($situationA, $situationB)));
-		$this->situationStore
-			->expects($this->at(1))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-		$this->situationStore
-			->expects($this->at(2))
-			->method('getChildren')
-			->will($this->returnValue(array()));
-
+		// when
 		$result = $this->permissionResolver->buildAccessConditionsFor($parentSituation);
 
+		// then
 		$this->assertEquals(
 			Aco::named('post')->with(Property::named('categoryId')->equals(5))->not()
 				->lAnd(Aco::named('post')->with(Property::named('wordcount')->greaterThan(100))->not()),
