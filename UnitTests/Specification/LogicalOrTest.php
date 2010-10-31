@@ -34,6 +34,17 @@ class PHPAccessControl_Specification_LogicalOrTest	extends PHPUnit_Framework_Tes
 		$this->assertTrue($gt2OrLt4->isSatisfiedBy(7));
 	}
 
+	/**
+	 * @test
+	 */
+	public function isNotSatisfiedIfNoneOfTheContainingAreSatisfied()
+	{
+		$gt6 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(6);
+		$lt4 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(4);
+		$gt6OrLt4 = $gt6->lOr($lt4);
+		$this->assertFalse($gt6OrLt4->isSatisfiedBy(5));
+	}
+
 	// ----- is equal to -----
 
 	/**

@@ -29,7 +29,7 @@ class PropertyDSL extends Property
 	{
 		if ($this->specification !== null)
 		{
-			$specification = $this->specification->lAnd();
+			$specification = $this->specification->lAnd($specification);
 		}
 		return new self($this->name, $specification);
 	}

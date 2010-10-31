@@ -24,14 +24,19 @@ class Property extends \PHPAccessControl\Specification\LeafSpecification
 
 	protected function isSpecialCaseOfProperty(Property $property)
 	{
-		if ($this->specification)
+		if ($this->name !== $property->name)
 		{
-			if(!$this->specification->isSpecialCaseOf($property->specification))
-			{
-				return false;
-			}
+			return false;
 		}
-		return $this->name === $property->name;
+		if (!$property->specification)
+		{
+			return true;
+		}
+		if (!$this->specification)
+		{
+			return false;
+		}
+		return $this->specification->isSpecialCaseOf($property->specification);
 	}
 
 	protected function isGeneralizationOfProperty(Property $property)

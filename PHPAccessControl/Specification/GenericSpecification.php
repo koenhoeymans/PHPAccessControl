@@ -84,11 +84,6 @@ abstract class GenericSpecification implements Specification
 		return $lAnd->isSpecialCaseOf($this);
 	}
 
-//	protected function isGeneralizationOfNotSpecification(NotSpecification $not)
-//	{
-//		return $not->isSpecialCaseOf($this);
-//	}
-
 	/**
 	 * @todo think about changing this
 	 * possibly don't look at subclass, only leaf specification, and
