@@ -2,16 +2,16 @@
 
 namespace PHPAccessControl\Property;
 
+use PHPAccessControl\Specification\Specification;
+
 class Property extends \PHPAccessControl\Specification\LeafSpecification
 {
 	protected $name;
 
 	protected $specification;
 
-	public function __construct(
-		$name,
-		\PHPAccessControl\Specification\Specification $specification = null
-	) {
+	public function __construct($name, Specification $specification = null)
+	{
 		$this->name = $name;
 		$this->specification = $specification;
 	}

@@ -2,7 +2,6 @@
 
 namespace PHPAccessControl\DSL;
 
-use PHPAccessControl\Situation\Situation;
 use PHPAccessControl\Specification\InheritanceList;
 use PHPAccessControl\Specification\Specification;
 

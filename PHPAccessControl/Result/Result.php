@@ -10,10 +10,8 @@ class Result
 
 	private $specification;
 
-	public function __construct(
-		$allowed,
-		Specification $specification = null
-	) {
+	public function __construct($allowed, Specification $specification = null)
+	{
 		$this->allowed = (bool) $allowed;
 		$this->specification = $specification;
 	}

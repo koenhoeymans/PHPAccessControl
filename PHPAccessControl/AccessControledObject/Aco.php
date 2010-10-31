@@ -2,8 +2,6 @@
 
 namespace PHPAccessControl\AccessControledObject;
 
-use PHPAccessControl\Property\PropertyList;
-use	PHPAccessControl\Property\Property;
 use	PHPAccessControl\Specification\Specification;
 
 class Aco extends \PHPAccessControl\Specification\LeafSpecification
