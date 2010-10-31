@@ -32,7 +32,7 @@ class InMemoryPermissionList implements PermissionList
 		{
 			$storedSituation = unserialize($serializedStoredSituation);
 
-			if ($situation == $storedSituation)
+			if ($situation->isEqualTo($storedSituation))
 			{
 				continue;
 			}
@@ -74,7 +74,7 @@ class InMemoryPermissionList implements PermissionList
 		{
 			$storedSituation = unserialize($serializedStoredSituation);
 
-			if ($situation == $storedSituation)
+			if ($situation->isEqualTo($storedSituation))
 			{
 				continue;
 			}
@@ -84,22 +84,22 @@ class InMemoryPermissionList implements PermissionList
 				continue;
 			}
 
-			$alreadyMoreSpecificMatchFound = false;
+			$alreadyLessSpecificMatchFound = false;
 			foreach ($matchingSituations as $key => $matchingSituation)
 			{
-				$matchingspecial = $matchingSituation->isSpecialCaseOf($storedSituation);
-				$storedspecial = $storedSituation->isSpecialCaseOf($matchingSituation);
-				if ($matchingspecial && !$storedspecial)
+				$storedMostGeneral = $matchingSituation->isSpecialCaseOf($storedSituation);
+				$matchingMostGeneral = $storedSituation->isSpecialCaseOf($matchingSituation);
+				if ($matchingMostGeneral && !$storedMostGeneral)
 				{
-					$alreadyMoreSpecificMatchFound = true;
+					$alreadyLessSpecificMatchFound = true;
 					break;
 				}
-				if (!$matchingspecial && $storedspecial)
+				if ($storedMostGeneral && !$matchingMostGeneral)
 				{
 					unset($matchingSituations[$key]);
 				}
 			}
-			if (!$alreadyMoreSpecificMatchFound)
+			if (!$alreadyLessSpecificMatchFound)
 			{
 				$matchingSituations[] = $storedSituation;
 			}

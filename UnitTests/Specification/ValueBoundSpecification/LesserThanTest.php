@@ -43,6 +43,17 @@ class PHPAccessControl_Specification_LesserThanTest extends PHPUnit_Framework_Te
 	/**
 	 * @test
 	 */
+	public function isGeneralizationOfLesserThanIfLesserThanWithinRange()
+	{
+		$lt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(2);
+		$lt1 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(1);
+		$this->assertFalse($lt1->isGeneralizationOf($lt2));
+		$this->assertTrue($lt2->isGeneralizationOf($lt1));
+	}
+
+	/**
+	 * @test
+	 */
 	public function isGeneralizationOfEqualIfEqualWithinRange()
 	{
 		$eq1 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(1);
@@ -50,16 +61,6 @@ class PHPAccessControl_Specification_LesserThanTest extends PHPUnit_Framework_Te
 		$lt0 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(0);
 		$this->assertTrue($lt2->isGeneralizationOf($eq1));
 		$this->assertFalse($lt0->isGeneralizationOf($eq1));
-	}
-
-	/**
-	 * @test
-	 */
-	public function isNotSpecialCaseOfEqual()
-	{
-		$eq1 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(1);
-		$lt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(2);
-		$this->assertFalse($lt2->isSpecialCaseOf($eq1));
 	}
 
 	// ----- not -----

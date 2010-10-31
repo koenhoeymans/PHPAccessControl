@@ -33,6 +33,17 @@ class PHPAccessControl_Specification_LogicalAndTest extends PHPUnit_Framework_Te
 		$this->assertTrue($gt2AndLt4->isSatisfiedBy(3));
 	}
 
+	/**
+	 * @test
+	 */
+	public function isNotSatisfiedOfOneOfTheComponentsIsNotSatisfied()
+	{
+		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
+		$lt4 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(4);
+		$gt2AndLt4 = $gt2->lAnd($lt4);
+		$this->assertFalse($gt2AndLt4->isSatisfiedBy(5));
+	}
+
 	// ----- is equal to -----
 
 	/**
@@ -62,6 +73,17 @@ class PHPAccessControl_Specification_LogicalAndTest extends PHPUnit_Framework_Te
 	/**
 	 * @test
 	 */
+	public function isNotSpecialCaseOfLogicalAndIfOneComponentIsNotSpecialCaseOfAnyOtherPart()
+	{
+		$eq6 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(6);
+		$lt4 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(4);
+		$lt3 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(3);
+		$this->assertFalse($eq6->lAnd($lt3)->isSpecialCaseOf($lt4->lAnd($lt3)));
+	}
+
+	/**
+	 * @test
+	 */
 	public function isGeneralizationOfLogicalAndIfOtherLogicalAndIsSpecialCase()
 	{
 		$eq6 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(6);
@@ -85,6 +107,18 @@ class PHPAccessControl_Specification_LogicalAndTest extends PHPUnit_Framework_Te
 	/**
 	 * @test
 	 */
+	public function isNotSpecialCaseOfLogicalOrIfIfNoPartIsSpecialCaseOfAnyOtherPart()
+	{
+		$eq2 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
+		$eq6 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(6);
+		$lt4 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(4);
+		$lt3 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(3);
+		$this->assertFalse($eq6->lAnd($lt4)->isSpecialCaseOf($eq2->lOr($lt3)));
+	}
+
+	/**
+	 * @test
+	 */
 	public function isGeneralizationOfLogicalOrIfAllPartsAreGeneralizationsOfLogicalOr()
 	{
 		$eq2 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
@@ -97,11 +131,34 @@ class PHPAccessControl_Specification_LogicalAndTest extends PHPUnit_Framework_Te
 	/**
 	 * @test
 	 */
+	public function isNotGeneralizationOfLogicalOrIfNotAllPartsAreGeneralizationsOfLogicalOr()
+	{
+		$eq2 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
+		$eq3 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(3);
+		$lt4 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(4);
+		$gt1 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(1);
+		$this->assertFalse($eq2->lAnd($lt4)->isGeneralizationOf($gt1->lOr($eq3)));
+	}
+
+	/**
+	 * @test
+	 */
 	public function isSpecialCaseOfLeafSpecificationIfOneOfTheContainingIsSpecialCase()
 	{
 		$eq6 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(6);
 		$lt4 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(4);
 		$this->assertTrue($eq6->lAnd($lt4)->isSpecialCaseOf($eq6));
+	}
+
+	/**
+	 * @test
+	 */
+	public function isNotSpecialCaseOfLeafSpecificationIfNoneOfThePartsIsSpecialCase()
+	{
+		$eq2 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
+		$eq6 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(6);
+		$lt4 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(4);
+		$this->assertFalse($eq2->lAnd($lt4)->isSpecialCaseOf($eq6));
 	}
 
 	/**

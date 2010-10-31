@@ -11,7 +11,19 @@ class PHPAccessControl_Situation_SituationTest extends PHPUnit_Framework_TestCas
 	/**
 	 * @test
 	 */
-	public function isSpecialCaseOfSituationIfSubjectAndObjectAreSpecialCasesAndTheActionIsTheSame()
+	public function isSpecialCaseOfSituationIfSubjectActionObjectAreTheSame()
+	{
+		$this->assertTrue(
+			Situation::UserViewPostWithCategoryIdEquals5()->isSpecialCaseOf(
+				Situation::UserViewPostWithCategoryIdEquals5()
+			)
+		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function isSpecialCaseOfSituationIfSubjectActionObjectAreAllSpecialCases()
 	{
 		$this->assertTrue(
 			Situation::UserViewPostWithCategoryIdEquals5()->isSpecialCaseOf(
@@ -20,6 +32,24 @@ class PHPAccessControl_Situation_SituationTest extends PHPUnit_Framework_TestCas
 		);
 		$this->assertFalse(
 			Situation::UserViewPost()->isSpecialCaseOf(
+				Situation::UserViewPostWithCategoryIdEquals5()
+			)
+		);
+	}
+	
+
+	/**
+	 * @test
+	 */
+	public function isGeneralizationOfSituationIfSubjectActionObjectAreSpecialCases()
+	{
+		$this->assertFalse(
+			Situation::UserViewPostWithCategoryIdEquals5()->isGeneralizationOf(
+				Situation::UserViewPost()
+			)
+		);
+		$this->assertTrue(
+			Situation::UserViewPost()->isGeneralizationOf(
 				Situation::UserViewPostWithCategoryIdEquals5()
 			)
 		);
