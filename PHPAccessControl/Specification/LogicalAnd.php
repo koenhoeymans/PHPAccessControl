@@ -1,11 +1,33 @@
 <?php
 
+/**
+ * @package PHPAccessControl
+ */
+
 namespace PHPAccessControl\Specification;
 
+/**
+ * Compound specification. Multiple specifications connected by 'and': all
+ * specifications must apply.
+ * 
+ * @package PHPAccessControl
+ */
 class LogicalAnd extends GenericSpecification
 {
+	/**
+	 * All specifications the 'and' consists of.
+	 * 
+	 * @var array
+	 */
 	private $components;
 
+	/**
+	 * Constructs a logical and, consisting of a variable number of specifications. 
+	 * 
+	 * @param Specification $first
+	 * @param Specification $second
+	 * @param Specification $third
+	 */
 	public function __construct(Specification $first, Specification $second, Specification $third = null)
 	{
 		$arguments = func_get_args();
@@ -18,6 +40,9 @@ class LogicalAnd extends GenericSpecification
 		}
 	}
 
+	/**
+	 * @see PHPAccessControl\Specification.GenericSpecification::lAnd()
+	 */
 	public function lAnd(Specification $specification)
 	{
 		$reflectionClass = new \ReflectionClass(__CLASS__);
@@ -26,6 +51,13 @@ class LogicalAnd extends GenericSpecification
 		return $instance;
 	}
 
+	/**
+	 * The negation of (A and B) is (not A or not B). This returns a
+	 * LogicalOr with all parts from the LogicalAnd where all parts are negated.
+	 * 
+	 * @see PHPAccessControl\Specification.GenericSpecification::not()
+	 * @return LogicalOr
+	 */
 	public function not()
 	{
 		$reflectionClass = new \ReflectionClass('\\PHPAccessControl\\Specification\\LogicalOr');
@@ -38,6 +70,9 @@ class LogicalAnd extends GenericSpecification
 		return $instance;
 	}
 
+	/**
+	 * @see PHPAccessControl\Specification.GenericSpecification::isSatisfiedBy()
+	 */
 	public function isSatisfiedBy($candidate)
 	{
 		foreach ($this->components as $component)
@@ -50,6 +85,13 @@ class LogicalAnd extends GenericSpecification
 		return true;
 	}
 
+	/**
+	 * @todo Implementation is wrong. LogicalAnd is special case of other LogicalAnd
+	 * if each component is a special case of the other LogicalAnd (or if each is
+	 * special case of each component of other LogicalAnd?).
+	 * 
+	 * @see PHPAccessControl\Specification.GenericSpecification::isSpecialCaseOfLogicalAnd()
+	 */
 	protected function isSpecialCaseOfLogicalAnd(LogicalAnd $logicalAnd)
 	{
 		foreach ($this->components as $component)
@@ -71,11 +113,23 @@ class LogicalAnd extends GenericSpecification
 		return true;
 	}
 
+	/**
+	 * A LogicalAnd is Generalization of other LogicalAnd
+	 * if the other is a special case.
+	 * 
+	 * @see PHPAccessControl\Specification.GenericSpecification::isGeneralizationOfLogicalAnd()
+	 */
 	protected function isGeneralizationOfLogicalAnd(LogicalAnd $lAnd)
 	{
 		return $lAnd->isSpecialCaseOf($this);
 	}
 
+	/**
+	 * LogicalAnd is special case of LogicalOr if at least component is a special case
+	 * of the LogicalOr.
+	 * 
+	 * @see PHPAccessControl\Specification.GenericSpecification::isSpecialCaseOfLogicalOr()
+	 */
 	protected function isSpecialCaseOfLogicalOr(LogicalOr $lOr)
 	{
 		foreach ($this->components as $component)
@@ -88,6 +142,12 @@ class LogicalAnd extends GenericSpecification
 		return false;
 	}
 
+	/**
+	 * LogicalAnd is a generalization of a LogicalOr if every component is a
+	 * generalization of the LogicalOr.
+	 * 
+	 * @see PHPAccessControl\Specification.GenericSpecification::isGeneralizationOfLogicalOr()
+	 */
 	protected function isGeneralizationOfLogicalOr(LogicalOr $lOr)
 	{
 		foreach ($this->components as $component)
@@ -100,6 +160,13 @@ class LogicalAnd extends GenericSpecification
 		return true;
 	}
 
+	/**
+	 * Is a special case of a LeafSpecification if every component is a
+	 * special case of the LeafSpecification.
+	 * 
+	 * @param Specification $specification
+	 * @return boolean
+	 */
 	protected function isSpecialCaseOfLeafSpecification(Specification $specification)
 	{
 		foreach ($this->components as $component)
@@ -112,6 +179,12 @@ class LogicalAnd extends GenericSpecification
 		return false;
 	}
 
+	/**
+	 * Is a generalization of a LeafSpecification if every component is a
+	 * generalization of the LeafSpecification.
+	 * 
+	 * @param Specification $specification
+	 */
 	protected function isGeneralizationOfLeafSpecification(Specification $specification)
 	{
 		foreach ($this->components as $component)

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @package PHPAccessControl
+ */
+
+/**
+ * Loads the files for the PHPAccessControl library.
+ */
 function PHPAccessControl_Autoload($className)
 {
 	$classNameFile = __DIR__

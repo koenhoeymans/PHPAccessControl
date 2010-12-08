@@ -1,9 +1,24 @@
 <?php
 
+/**
+ * @package PHPAccessControl
+ */
+
 namespace PHPAccessControl\Property;
 
+/**
+ * Utility class to more easily create property specifications.
+ * 
+ * @package PHPAccessControl
+ */
 class PropertyDSL extends Property
 {
+	/**
+	 * Property equals number.
+	 * 
+	 * @param int $int
+	 * @preturn PropertyDSL
+	 */
 	public function equals($int)
 	{
 		$specification =
@@ -11,6 +26,12 @@ class PropertyDSL extends Property
 		return $this->createPropertyWith($specification);
 	}
 
+	/**
+	 * Property is lesser than a value.
+	 * 
+	 * @param int $int
+	 * @return PropertyDSL
+	 */
 	public function lesserThan($int)
 	{
 		$specification =
@@ -18,6 +39,12 @@ class PropertyDSL extends Property
 		return $this->createPropertyWith($specification);
 	}
 
+	/**
+	 * Property is greater than a value.
+	 * 
+	 * @param int $int
+	 * @return PropertyDSL
+	 */
 	public function greaterThan($int)
 	{
 		$specification =
@@ -25,6 +52,12 @@ class PropertyDSL extends Property
 		return $this->createPropertyWith($specification);
 	}
 
+	/**
+	 * Creates the property with the added specification.
+	 * 
+	 * @param \PHPAccessControl\Specification\Specification $specification
+	 * @return PropertyDSL
+	 */
 	protected function createPropertyWith(\PHPAccessControl\Specification\Specification $specification)
 	{
 		if ($this->specification !== null)
