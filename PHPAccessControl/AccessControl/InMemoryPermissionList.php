@@ -4,26 +4,48 @@ namespace PHPAccessControl\AccessControl;
 
 use PHPAccessControl\Situation\Situation;
 
+/**
+ * Stores permission of Situations in memory.
+ * 
+ * @package PHPAccessControl
+ */
 class InMemoryPermissionList implements PermissionList
 {
+	/**
+	 * Array with serialized situation as key, value is boolean (allowed or not)
+	 * 
+	 * @var array
+	 */
 	private $situations = array();
 
+	/**
+	 * @see PHPAccessControl\AccessControl.PermissionList::allow()
+	 */
 	public function allow(Situation $situation)
 	{
 		$this->situations[serialize($situation)] = true;
 	}
 
+	/**
+	 * @see PHPAccessControl\AccessControl.PermissionList::deny()
+	 */
 	public function deny(Situation $situation)
 	{
 		$this->situations[serialize($situation)] = false;
 	}
 
+	/**
+	 * @see PHPAccessControl\AccessControl.PermissionList::isAllowed()
+	 */
 	public function isAllowed(Situation $situation)
 	{
 		return isset($this->situations[serialize($situation)])
 			? $this->situations[serialize($situation)] : null;
 	}
 
+	/**
+	 * @see PHPAccessControl\AccessControl.PermissionList::findParents()
+	 */
 	public function findParents(Situation $situation)
 	{
 		$matchingSituations = array();
@@ -66,6 +88,9 @@ class InMemoryPermissionList implements PermissionList
 		return $matchingSituations;
 	}
 
+	/**
+	 * @see PHPAccessControl\AccessControl.PermissionList::findChildren()
+	 */
 	public function findChildren(Situation $situation)
 	{
 		$matchingSituations = array();

@@ -2,6 +2,9 @@
 
 namespace PHPAccessControl\EndToEndTests\Setup;
 
+/**
+ * All components store their objects in memory. No persistent mechanism is used.
+ */
 class InMemorySetup
 {
 	public static function create()

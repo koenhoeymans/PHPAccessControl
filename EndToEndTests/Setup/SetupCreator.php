@@ -2,8 +2,17 @@
 
 namespace PHPAccessControl\EndToEndTests\Setup;
 
+/**
+ * Creates a setup for the end-to-end tests.
+ */
 class SetupCreator
 {
+	/**
+	 * Looks for the '--setup' argument after 'phpunit'. If none is found it returns
+	 * 'InMemorySetup' as the default setup.
+	 * 
+	 * @return \PHPAccessControl\PHPAccessControl
+	 */
 	public static function create()
 	{
 		global $argv, $argc;
