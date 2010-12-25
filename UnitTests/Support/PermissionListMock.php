@@ -2,8 +2,6 @@
 
 namespace PHPAccessControl\UnitTests\Support;
 
-use PHPAccessControl\Situation\Situation;
-
 class PermissionListMock implements \PHPAccessControl\AccessControl\PermissionList
 {
 	private $permissions = array();
@@ -12,17 +10,17 @@ class PermissionListMock implements \PHPAccessControl\AccessControl\PermissionLi
 
 	private $children = array();
 
-	public function allow(Situation $situation)
+	public function allow(\PHPAccessControl\Situation\Situation $situation)
 	{
 		$this->permissions[serialize($situation)] = true;
 	}
 
-	public function deny(Situation $situation)
+	public function deny(\PHPAccessControl\Situation\Situation $situation)
 	{
 		$this->permissions[serialize($situation)] = false;
 	}
 
-	public function isAllowed(Situation $situation)
+	public function isAllowed(\PHPAccessControl\Situation\Situation $situation)
 	{
 		if (isset($this->permissions[serialize($situation)]))
 		{
@@ -31,13 +29,13 @@ class PermissionListMock implements \PHPAccessControl\AccessControl\PermissionLi
 		return null;
 	}
 
-	public function addParent(Situation $situation, Situation $parentSituation)
+	public function addParent(\PHPAccessControl\Situation\Situation $situation, \PHPAccessControl\Situation\Situation $parentSituation)
 	{
 		$this->parents[serialize($situation)][] = $parentSituation;
 		$this->children[serialize($parentSituation)][] = $situation;
 	}
 
-	public function findParents(Situation $situation)
+	public function findParents(\PHPAccessControl\Situation\Situation $situation)
 	{
 		if (isset($this->parents[serialize($situation)]))
 		{
@@ -46,7 +44,7 @@ class PermissionListMock implements \PHPAccessControl\AccessControl\PermissionLi
 		return array();
 	}
 
-	public function findChildren(Situation $situation)
+	public function findChildren(\PHPAccessControl\Situation\Situation $situation)
 	{
 		if (isset($this->children[serialize($situation)]))
 		{

@@ -4,7 +4,7 @@ require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
 
-use PHPAccessControl\UnitTests\Support\Situation;
+use PHPAccessControl\UnitTests\Support\Situation as a;
 
 class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 {
@@ -24,8 +24,8 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function storesThatSituationIsAllowed()
 	{
-		$this->permissionList->allow(Situation::userViewPost());
-		$this->assertTrue($this->permissionList->isAllowed(Situation::userViewPost()));
+		$this->permissionList->allow(a::userViewPost());
+		$this->assertTrue($this->permissionList->isAllowed(a::userViewPost()));
 	}
 
 	/**
@@ -33,8 +33,8 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function storesThatSituationIsDenied()
 	{
-		$this->permissionList->deny(Situation::userViewPost());
-		$this->assertFalse($this->permissionList->isAllowed(Situation::userViewPost()));
+		$this->permissionList->deny(a::userViewPost());
+		$this->assertFalse($this->permissionList->isAllowed(a::userViewPost()));
 	}
 
 	/**
@@ -42,7 +42,7 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function whenSituationIsNeitherDeniedNorAllowedPermissionIsUnknown()
 	{
-		$this->assertNull($this->permissionList->isAllowed(Situation::userViewPost()));
+		$this->assertNull($this->permissionList->isAllowed(a::userViewPost()));
 	}
 
 	/**
@@ -52,7 +52,7 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	{
 		$this->assertEquals(
 			array(),
-			$this->permissionList->findParents(Situation::userViewPost())
+			$this->permissionList->findParents(a::userViewPost())
 		);
 	}
 
@@ -63,7 +63,7 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	{
 		$this->assertEquals(
 			array(),
-			$this->permissionList->findChildren(Situation::userViewPost())
+			$this->permissionList->findChildren(a::userViewPost())
 		);
 	}
 
@@ -72,10 +72,10 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function whenPermissionWasAssignedToAChildSituationItIsFoundAsChild()
 	{
-		$this->permissionList->deny(Situation::userViewPostWithWordCountGreaterThan100());
+		$this->permissionList->deny(a::userViewPostWithWordCountGreaterThan100());
 		$this->assertTrue($this->arraysHaveEqualElements(
-			array(Situation::userViewPostWithWordCountGreaterThan100()),
-			$this->permissionList->findChildren(Situation::userViewPost())
+			array(a::userViewPostWithWordCountGreaterThan100()),
+			$this->permissionList->findChildren(a::userViewPost())
 		));
 	}
 
@@ -84,10 +84,10 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function whenPermissionWasAssignedToAParentSituationItIsFoundAsParent()
 	{
-		$this->permissionList->deny(Situation::userViewPost());
+		$this->permissionList->deny(a::userViewPost());
 		$this->assertTrue($this->arraysHaveEqualElements(
-			array(Situation::userViewPost()),
-			$this->permissionList->findParents(Situation::userViewPostWithWordCountGreaterThan100())
+			array(a::userViewPost()),
+			$this->permissionList->findParents(a::userViewPostWithWordCountGreaterThan100())
 		));
 	}
 
@@ -96,13 +96,13 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function onlyTheClosestParentIsReturned()
 	{
-		$this->permissionList->deny(Situation::userViewPostWithWordCountGreaterThan100());
-		$this->permissionList->allow(Situation::userViewPost());
+		$this->permissionList->deny(a::userViewPostWithWordCountGreaterThan100());
+		$this->permissionList->allow(a::userViewPost());
 		$this->assertTrue($this->arraysHaveEqualElements(
 			array(
-				Situation::userViewPostWithWordCountGreaterThan100(),
+				a::userViewPostWithWordCountGreaterThan100(),
 			),
-			$this->permissionList->findParents(Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100())
+			$this->permissionList->findParents(a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100())
 		));
 	}
 
@@ -111,15 +111,15 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function withMultipleSituationsAllClosestParentsAreReturned()
 	{
-		$this->permissionList->allow(Situation::userViewPost());
-		$this->permissionList->deny(Situation::userViewPostWithWordCountGreaterThan100());
-		$this->permissionList->deny(Situation::userViewPostWithCategoryIdEquals5());
+		$this->permissionList->allow(a::userViewPost());
+		$this->permissionList->deny(a::userViewPostWithWordCountGreaterThan100());
+		$this->permissionList->deny(a::userViewPostWithCategoryIdEquals5());
 		$this->assertTrue($this->arraysHaveEqualElements(
 			array(
-				Situation::userViewPostWithWordCountGreaterThan100(),
-				Situation::userViewPostWithCategoryIdEquals5()
+				a::userViewPostWithWordCountGreaterThan100(),
+				a::userViewPostWithCategoryIdEquals5()
 			),
-			$this->permissionList->findParents(Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100())
+			$this->permissionList->findParents(a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100())
 		));
 	}
 
@@ -128,11 +128,11 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function onlyTheClosestChildIsReturned()
 	{
-		$this->permissionList->deny(Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100());
-		$this->permissionList->allow(Situation::userViewPostWithWordCountGreaterThan100());
+		$this->permissionList->deny(a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100());
+		$this->permissionList->allow(a::userViewPostWithWordCountGreaterThan100());
 		$this->assertTrue($this->arraysHaveEqualElements(
-			array(Situation::userViewPostWithWordCountGreaterThan100()),
-			$this->permissionList->findChildren(Situation::userViewPost())
+			array(a::userViewPostWithWordCountGreaterThan100()),
+			$this->permissionList->findChildren(a::userViewPost())
 		));
 	}
 
@@ -141,15 +141,15 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function withMultipleSituationsAllClosestChildrenAreReturned()
 	{
-		$this->permissionList->deny(Situation::userViewPostWithWordCountGreaterThan100());
-		$this->permissionList->deny(Situation::userViewPostWithCategoryIdEquals5());
-		$this->permissionList->deny(Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100());
+		$this->permissionList->deny(a::userViewPostWithWordCountGreaterThan100());
+		$this->permissionList->deny(a::userViewPostWithCategoryIdEquals5());
+		$this->permissionList->deny(a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100());
 		$this->assertTrue($this->arraysHaveEqualElements(
 			array(
-				Situation::userViewPostWithWordCountGreaterThan100(),
-				Situation::userViewPostWithCategoryIdEquals5()
+				a::userViewPostWithWordCountGreaterThan100(),
+				a::userViewPostWithCategoryIdEquals5()
 			),
-			$this->permissionList->findChildren(Situation::userViewPost())
+			$this->permissionList->findChildren(a::userViewPost())
 		));
 	}
 
@@ -158,10 +158,10 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function situationWithPermissionAssignedIsNotReturnedAsParentItself()
 	{
-		$this->permissionList->allow(Situation::userViewPost());
+		$this->permissionList->allow(a::userViewPost());
 		$this->assertEquals(
 			array(),
-			$this->permissionList->findParents(Situation::userViewPost())
+			$this->permissionList->findParents(a::userViewPost())
 		);
 	}
 
@@ -170,10 +170,10 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function situationWithPermissionAssignedIsNotReturnedAsChildItself()
 	{
-		$this->permissionList->allow(Situation::userViewPost());
+		$this->permissionList->allow(a::userViewPost());
 		$this->assertEquals(
 			array(),
-			$this->permissionList->findChildren(Situation::userViewPost())
+			$this->permissionList->findChildren(a::userViewPost())
 		);
 	}
 
@@ -182,10 +182,10 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function situationWithPermissionAssignedThatIsNotGeneralizationIsNotReturnedAsParent()
 	{
-		$this->permissionList->allow(Situation::userViewPostWithWordCountGreaterThan100());
+		$this->permissionList->allow(a::userViewPostWithWordCountGreaterThan100());
 		$this->assertEquals(
 			array(),
-			$this->permissionList->findParents(Situation::userViewPost())
+			$this->permissionList->findParents(a::userViewPost())
 		);
 	}
 
@@ -194,10 +194,10 @@ class PHPAccessControl_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
 	 */
 	public function situationWithPermissionAssignedThatIsNotSpecialCaseIsNotReturnedAsParent()
 	{
-		$this->permissionList->allow(Situation::userViewPost());
+		$this->permissionList->allow(a::userViewPost());
 		$this->assertEquals(
 			array(),
-			$this->permissionList->findChildren(Situation::userViewPostWithWordCountGreaterThan100())
+			$this->permissionList->findChildren(a::userViewPostWithWordCountGreaterThan100())
 		);
 	}
 }

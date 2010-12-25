@@ -4,10 +4,9 @@ namespace PHPAccessControl\AccessControl;
 
 use PHPAccessControl\AccessControl\PermissionList;
 use PHPAccessControl\Situation\Situation;
-use PHPAccessControl\Situation\SituationStore;
 
 /**
- * Resolves permission by building them from the ground up.
+ * Resolves permissions by building them from the ground up.
  * 
  * @package PHPAccessControl
  */

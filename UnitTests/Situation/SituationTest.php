@@ -4,7 +4,7 @@ require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
 
-use PHPAccessControl\UnitTests\Support\Situation;
+use PHPAccessControl\UnitTests\Support\Situation as a;
 
 class PHPAccessControl_Situation_SituationTest extends PHPUnit_Framework_TestCase
 {
@@ -14,8 +14,8 @@ class PHPAccessControl_Situation_SituationTest extends PHPUnit_Framework_TestCas
 	public function isSpecialCaseOfSituationIfSubjectActionObjectAreTheSame()
 	{
 		$this->assertTrue(
-			Situation::UserViewPostWithCategoryIdEquals5()->isSpecialCaseOf(
-				Situation::UserViewPostWithCategoryIdEquals5()
+			a::UserViewPostWithCategoryIdEquals5()->isSpecialCaseOf(
+				a::UserViewPostWithCategoryIdEquals5()
 			)
 		);
 	}
@@ -26,13 +26,13 @@ class PHPAccessControl_Situation_SituationTest extends PHPUnit_Framework_TestCas
 	public function isSpecialCaseOfSituationIfSubjectActionObjectAreAllSpecialCases()
 	{
 		$this->assertTrue(
-			Situation::UserViewPostWithCategoryIdEquals5()->isSpecialCaseOf(
-				Situation::UserViewPost()
+			a::UserViewPostWithCategoryIdEquals5()->isSpecialCaseOf(
+				a::UserViewPost()
 			)
 		);
 		$this->assertFalse(
-			Situation::UserViewPost()->isSpecialCaseOf(
-				Situation::UserViewPostWithCategoryIdEquals5()
+			a::UserViewPost()->isSpecialCaseOf(
+				a::UserViewPostWithCategoryIdEquals5()
 			)
 		);
 	}
@@ -44,13 +44,13 @@ class PHPAccessControl_Situation_SituationTest extends PHPUnit_Framework_TestCas
 	public function isGeneralizationOfSituationIfSubjectActionObjectAreSpecialCases()
 	{
 		$this->assertFalse(
-			Situation::UserViewPostWithCategoryIdEquals5()->isGeneralizationOf(
-				Situation::UserViewPost()
+			a::UserViewPostWithCategoryIdEquals5()->isGeneralizationOf(
+				a::UserViewPost()
 			)
 		);
 		$this->assertTrue(
-			Situation::UserViewPost()->isGeneralizationOf(
-				Situation::UserViewPostWithCategoryIdEquals5()
+			a::UserViewPost()->isGeneralizationOf(
+				a::UserViewPostWithCategoryIdEquals5()
 			)
 		);
 	}

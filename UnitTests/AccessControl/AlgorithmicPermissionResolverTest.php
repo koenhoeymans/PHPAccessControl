@@ -5,7 +5,7 @@ require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 use PHPAccessControl\AccessControledObject\Aco;
-use PHPAccessControl\UnitTests\Support\Situation;
+use PHPAccessControl\UnitTests\Support\Situation as a;
 use PHPAccessControl\Property\PropertyDSL as Property;
 
 /**
@@ -29,7 +29,7 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function specificationIsDeniedWhenThereIsNoMatchingRule()
 	{
 		$this->assertFalse(
-			$this->permissionResolver->isAllowed(Situation::userViewPost())
+			$this->permissionResolver->isAllowed(a::userViewPost())
 		);
 	}
 
@@ -38,10 +38,10 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function isAllowedByInheritanceWhenMatchingAllowingRuleExists()
 	{
-		$this->permissionList->allow(Situation::userViewPost());
+		$this->permissionList->allow(a::userViewPost());
 
 		$this->assertTrue(
-			$this->permissionResolver->isAllowed(Situation::userViewPost())
+			$this->permissionResolver->isAllowed(a::userViewPost())
 		);
 	}
 
@@ -50,10 +50,10 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function isAllowedByInheritanceWhenMatchingDenyingRuleExists()
 	{
-		$this->permissionList->deny(Situation::userViewPost());
+		$this->permissionList->deny(a::userViewPost());
 
 		$this->assertFalse(
-			$this->permissionResolver->isAllowed(Situation::userViewPost())
+			$this->permissionResolver->isAllowed(a::userViewPost())
 		);
 	}
 
@@ -62,13 +62,13 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function isAllowedByInheritanceWhenNotAllowedNorDeniedButMoreGeneralSpecificationisAllowedByInheritance()
 	{
-		$this->permissionList->allow(Situation::userViewPost());
+		$this->permissionList->allow(a::userViewPost());
 		$this->permissionList->addParent(
-			Situation::userViewPostWithCategoryIdEquals5(), Situation::userViewPost()
+			a::userViewPostWithCategoryIdEquals5(), a::userViewPost()
 		);
 
 		$this->assertTrue(
-			$this->permissionResolver->isAllowed(Situation::userViewPostWithCategoryIdEquals5())
+			$this->permissionResolver->isAllowed(a::userViewPostWithCategoryIdEquals5())
 		);
 	}
 
@@ -77,16 +77,16 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function withMultipleLevelsOfAccessRightsTheClosestOneDeterminesInheritedPermission()
 	{
-		$this->permissionList->allow(Situation::userViewPostWithCategoryIdEquals5());
-		$this->permissionList->deny(Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100());
+		$this->permissionList->allow(a::userViewPostWithCategoryIdEquals5());
+		$this->permissionList->deny(a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100());
 		$this->permissionList->addParent(
-			Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100(),
-			Situation::userViewPostWithCategoryIdEquals5()
+			a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100(),
+			a::userViewPostWithCategoryIdEquals5()
 		);
 
 		$this->assertFalse(
 			$this->permissionResolver->isAllowed(
-				Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100()
+				a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100()
 			)
 		);
 	}
@@ -96,19 +96,19 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function allowedWinsFromDeniedWhenCompetingPermissionsForParentSituations()
 	{
-		$this->permissionList->allow(Situation::userViewPostWithCategoryIdEquals5());
-		$this->permissionList->deny(Situation::userViewPostWithWordCountGreaterThan100());
+		$this->permissionList->allow(a::userViewPostWithCategoryIdEquals5());
+		$this->permissionList->deny(a::userViewPostWithWordCountGreaterThan100());
 		$this->permissionList->addParent(
-			Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100(),
-			Situation::userViewPostWithCategoryIdEquals5()
+			a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100(),
+			a::userViewPostWithCategoryIdEquals5()
 		);
 		$this->permissionList->addParent(
-			Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100(),
-			Situation::userViewPostWithWordCountGreaterThan100()
+			a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100(),
+			a::userViewPostWithWordCountGreaterThan100()
 		);
 
 		$this->assertTrue(
-			$this->permissionResolver->isAllowed(Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100())
+			$this->permissionResolver->isAllowed(a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100())
 		);
 	}
 
@@ -119,9 +119,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function noAccessConditionsWhenRulesDontContainAcosThatAreFurtherSpecified()
 	{
-		$this->permissionList->allow(Situation::userViewPost());
+		$this->permissionList->allow(a::userViewPost());
 
-		$this->assertNull($this->permissionResolver->buildAccessConditionsFor(Situation::userViewPost()));
+		$this->assertNull($this->permissionResolver->buildAccessConditionsFor(a::userViewPost()));
 	}
 
 	/**
@@ -130,8 +130,8 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function accessIsConditionalForSituationWithoutRuleWhenFurtherSpecifiedSituationIsAllowed()
 	{
 		// given
-		$situation = Situation::userViewPost();
-		$childSituation = Situation::userViewPostWithWordCountGreaterThan100();
+		$situation = a::userViewPost();
+		$childSituation = a::userViewPostWithWordCountGreaterThan100();
 
 		$this->permissionList->allow($childSituation);
 		$this->permissionList->addParent($childSituation, $situation);
@@ -151,8 +151,8 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function accessIsNotConditionalForAllowedSituationAndAllowedSpecifyingSituation()
 	{
 		// given
-		$situation = Situation::userViewPost();
-		$childSituation = Situation::userViewPostWithWordCountGreaterThan100();
+		$situation = a::userViewPost();
+		$childSituation = a::userViewPostWithWordCountGreaterThan100();
 
 		$this->permissionList->allow($situation);
 		$this->permissionList->allow($childSituation);
@@ -171,8 +171,8 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function accessIsNotConditionalForDeniedSituationAndDeniedSpecifyingSituation()
 	{
 		// given
-		$situation = Situation::userViewPost();
-		$childSituation = Situation::userViewPostWithWordCountGreaterThan100();
+		$situation = a::userViewPost();
+		$childSituation = a::userViewPostWithWordCountGreaterThan100();
 
 		$this->permissionList->deny($situation);
 		$this->permissionList->deny($childSituation);
@@ -191,8 +191,8 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function accessIsConditionalForSituationAllowedButChildSituationDenied()
 	{
 		// given
-		$situation = Situation::userViewPost();
-		$childSituation = Situation::userViewPostWithWordCountGreaterThan100();
+		$situation = a::userViewPost();
+		$childSituation = a::userViewPostWithWordCountGreaterThan100();
 
 		$this->permissionList->allow($situation);
 		$this->permissionList->deny($childSituation);
@@ -214,9 +214,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function conditionalAccessForAllowedDeniedAllowed()
 	{
 		// given
-		$parentSituation = Situation::userViewPost();
-		$situation = Situation::userViewPostWithWordCountGreaterThan100();
-		$childSituation = Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
+		$parentSituation = a::userViewPost();
+		$situation = a::userViewPostWithWordCountGreaterThan100();
+		$childSituation = a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
 
 		$this->permissionList->allow($parentSituation);
 		$this->permissionList->deny($situation);
@@ -247,9 +247,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function conditionalAccessForDeniedAllowedDenied()
 	{
 		// given
-		$parentSituation = Situation::userViewPost();
-		$situation = Situation::userViewPostWithWordCountGreaterThan100();
-		$childSituation = Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
+		$parentSituation = a::userViewPost();
+		$situation = a::userViewPostWithWordCountGreaterThan100();
+		$childSituation = a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
 
 		$this->permissionList->deny($parentSituation);
 		$this->permissionList->allow($situation);
@@ -278,9 +278,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function conditionalAccessForAllowedAllowedDenied()
 	{
 		// given
-		$parentSituation = Situation::userViewPost();
-		$situation = Situation::userViewPostWithWordCountGreaterThan100();
-		$childSituation = Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
+		$parentSituation = a::userViewPost();
+		$situation = a::userViewPostWithWordCountGreaterThan100();
+		$childSituation = a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
 
 		$this->permissionList->allow($parentSituation);
 		$this->permissionList->allow($situation);
@@ -306,9 +306,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function conditionalAccessForDeniedDeniedAllowed()
 	{
 		// given
-		$parentSituation = Situation::userViewPost();
-		$situation = Situation::userViewPostWithWordCountGreaterThan100();
-		$childSituation = Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
+		$parentSituation = a::userViewPost();
+		$situation = a::userViewPostWithWordCountGreaterThan100();
+		$childSituation = a::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100();
 
 		$this->permissionList->deny($parentSituation);
 		$this->permissionList->deny($situation);
@@ -333,9 +333,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function conditionalAccessForDeniedAndTwoChildSituationsAllowed()
 	{
 		// given
-		$parentSituation = Situation::userViewPost();
-		$situationA = Situation::userViewPostWithCategoryIdEquals5();
-		$situationB = Situation::userViewPostWithWordCountGreaterThan100();
+		$parentSituation = a::userViewPost();
+		$situationA = a::userViewPostWithCategoryIdEquals5();
+		$situationB = a::userViewPostWithWordCountGreaterThan100();
 
 		$this->permissionList->deny($parentSituation);
 		$this->permissionList->allow($situationA);
@@ -360,9 +360,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function conditionalAccessForAllowedAndTwoChildSituationsDenied()
 	{
 		// given
-		$parentSituation = Situation::userViewPost();
-		$situationA = Situation::userViewPostWithCategoryIdEquals5();
-		$situationB = Situation::userViewPostWithWordCountGreaterThan100();
+		$parentSituation = a::userViewPost();
+		$situationA = a::userViewPostWithCategoryIdEquals5();
+		$situationB = a::userViewPostWithWordCountGreaterThan100();
 
 		$this->permissionList->allow($parentSituation);
 		$this->permissionList->deny($situationA);

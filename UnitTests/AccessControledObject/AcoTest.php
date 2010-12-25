@@ -1,12 +1,11 @@
 <?php
 
-use PHPAccessControl\Property\Property;
 require_once dirname(__FILE__)
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'TestHelper.php';
 
-use \PHPAccessControl\AccessControledObject\Aco;
-use \PHPAccessControl\Property\PropertyDSL as aProperty;
+use PHPAccessControl\AccessControledObject\Aco;
+use PHPAccessControl\Property\PropertyDSL as aProperty;
 
 class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_TestCase
 {
@@ -69,8 +68,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function twoIdenticalAcosAreSpecialCasesOfEachOther()
 	{
-		$aco1 = Aco::named('post')->with(Property::named('category'));
-		$aco2 = Aco::named('post')->with(Property::named('category'));
+		$aco1 = Aco::named('post')->with(aProperty::named('category'));
+		$aco2 = Aco::named('post')->with(aProperty::named('category'));
 		$this->assertTrue($aco1->isSpecialCaseOf($aco2));
 	}
 
@@ -79,8 +78,8 @@ class PHPAccessControl_AccessControledObject_AcoTest extends PHPUnit_Framework_T
 	 */
 	public function twoIdenticalAcosAreGeneralizationsOfEachOther()
 	{
-		$aco1 = Aco::named('post')->with(Property::named('category'));
-		$aco2 = Aco::named('post')->with(Property::named('category'));
+		$aco1 = Aco::named('post')->with(aProperty::named('category'));
+		$aco2 = Aco::named('post')->with(aProperty::named('category'));
 		$this->assertTrue($aco1->isGeneralizationOf($aco2));
 	}
 
