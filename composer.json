@@ -1,6 +1,6 @@
 {
-	"name": "PHPAccessControl/PHPAccessControl",
-	"description": "PHP access control library",
+	"name": "phpaccesscontrol/phpaccesscontrol",
+	"description": "PHP Access Control Library",
 	"license": "BSD-2-Clause",
 	"authors": [{
 		"name": "Koen Hoeymans",
