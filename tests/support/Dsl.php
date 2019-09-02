@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPAccessControl\UnitTests\Support;
+namespace PHPAccessControl\tests\Support;
 
 class Dsl
 {
