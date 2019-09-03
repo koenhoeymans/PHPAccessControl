@@ -1,12 +1,12 @@
 <?php
 
-namespace PHPAccessControl\UnitTests\Support;
+namespace PHPAccessControl;
 
 use PHPAccessControl\AccessControledObject\Aco;
 use PHPAccessControl\Property\PropertyDSL as aProperty;
 use PHPAccessControl\Action\Action;
 
-class Situation
+class TestSituation
 {
 	public static function adminEditContent()
 	{
