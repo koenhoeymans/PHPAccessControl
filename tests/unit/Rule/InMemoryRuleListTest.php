@@ -1,13 +1,11 @@
 <?php
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'TestHelper.php';
+namespace PHPAccessControl\Rule;
 
-use PHPAccessControl\UnitTests\Support\CreateRule;
-use \PHPAccessControl\UnitTests\Support\Situation;
+use PHPAccessControl\CreateRule;
+use PHPAccessControl\TestSituation;
 
-class PHPAccessControl_Rule_InMemoryRuleListTest extends PHPUnit_Framework_TestCase
+class InMemoryRuleListTest extends \PHPUnit\Framework\TestCase
 {
 	public function setup()
 	{
@@ -20,13 +18,13 @@ class PHPAccessControl_Rule_InMemoryRuleListTest extends PHPUnit_Framework_TestC
 	public function notifiesObserversOfNewlyAddedRules()
 	{
 		
-		$mockObserver = $this->getMock('PHPAccessControl\\Rule\\RuleListObserver');
+		$mockObserver = $this->createMock('PHPAccessControl\\Rule\\RuleListObserver');
 		$mockObserver
 			->expects($this->once())
 			->method('notifyRuleAdded')
-			->with($this->equalTo(CreateRule::allow(Situation::UserViewPost()))
+			->with($this->equalTo(CreateRule::allow(TestSituation::UserViewPost()))
 			);
 		$this->ruleList->addObserver($mockObserver);
-		$this->ruleList->addRule(CreateRule::allow(Situation::UserViewPost()));
+		$this->ruleList->addRule(CreateRule::allow(TestSituation::UserViewPost()));
 	}
 }
