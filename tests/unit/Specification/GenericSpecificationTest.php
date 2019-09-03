@@ -1,17 +1,23 @@
 <?php
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'TestHelper.php';
+namespace PHPAccessControl\Specification;
 
-use PHPAccessControl\UnitTests\Support\GenericSpecificationImplementation as GenericSpecification;
-
-/**
- * @todo replace when issue resolved:
- * http://github.com/sebastianbergmann/phpunit-mock-objects/issues/#issue/22
- */
-class PHPAccessControl_Specification_GenericSpecificationTest extends PHPUnit_Framework_TestCase
+class GenericSpecificationTest extends \PHPUnit\Framework\TestCase
 {
+    private $specification1;
+
+    private $specification2;
+
+    public function setup()
+    {
+        $this->specification1 = $this->getMockForAbstractClass(
+            'PHPAccessControl\\Specification\\GenericSpecification'
+        );
+        $this->specification2 = $this->getMockForAbstractClass(
+            'PHPAccessControl\\Specification\\GenericSpecification'
+        );
+    }
+
 	// ----- is satisfied by -----
 
 	/**
@@ -19,8 +25,7 @@ class PHPAccessControl_Specification_GenericSpecificationTest extends PHPUnit_Fr
 	 */
 	public function isNeverSatisfied()
 	{
-		$specification = new GenericSpecification();
-		$this->assertFalse($specification->isSatisfiedBy(1));
+		$this->assertFalse($this->specification1->isSatisfiedBy(1));
 	}
 
 	// ----- equal -----
@@ -32,16 +37,11 @@ class PHPAccessControl_Specification_GenericSpecificationTest extends PHPUnit_Fr
 	 */
 	public function seeksMethodIsSpecialCaseOfOtherClassNameWhenComparingSpecialCaseWithOtherSpecification()
 	{
-		$specification1 = $specification1 = $this->getMock(
-			'PHPAccessControl\\UnitTests\\Support\\GenericSpecificationImplementation',
-			array('isSpecialCaseOfGenericSpecification')
-		);
-		$specification2 = new GenericSpecification();
-		$specification1
+		$this->specification1
 			->expects($this->any())
 			->method('isSpecialCaseOfGenericSpecification')
 			->will($this->returnValue(true));
-		$this->assertTrue($specification1->isSpecialCaseOf($specification2));
+		$this->assertTrue($this->specification1->isSpecialCaseOf($this->specification2));
 	}
 
 	/**
@@ -49,16 +49,11 @@ class PHPAccessControl_Specification_GenericSpecificationTest extends PHPUnit_Fr
 	 */
 	public function seeksMethodIsGeneralizationOfOtherClassNameWhenComparingSpecialCaseWithOtherSpecification()
 	{
-		$specification1 = $specification1 = $this->getMock(
-			'PHPAccessControl\\UnitTests\\Support\\GenericSpecificationImplementation',
-			array('isGeneralizationOfGenericSpecification')
-		);
-		$specification2 = new GenericSpecification();
-		$specification1
+		$this->specification1
 			->expects($this->any())
 			->method('isGeneralizationOfGenericSpecification')
 			->will($this->returnValue(true));
-		$this->assertTrue($specification1->isGeneralizationOf($specification2));
+		$this->assertTrue($this->specification1->isGeneralizationOf($this->specification2));
 	}
 
 	/**
@@ -66,9 +61,7 @@ class PHPAccessControl_Specification_GenericSpecificationTest extends PHPUnit_Fr
 	 */
 	public function isNotSpecialCaseOfAnySpecification()
 	{
-		$specification1 = new GenericSpecification();
-		$specification2 = new GenericSpecification();
-		$this->assertFalse($specification1->isSpecialCaseOf($specification2));
+		$this->assertFalse($this->specification1->isSpecialCaseOf($this->specification2));
 	}
 
 	/**
@@ -76,8 +69,6 @@ class PHPAccessControl_Specification_GenericSpecificationTest extends PHPUnit_Fr
 	 */
 	public function isNotGeneralizationOfAnySpecification()
 	{
-		$specification1 = new GenericSpecification();
-		$specification2 = new GenericSpecification();
-		$this->assertFalse($specification1->isGeneralizationOf($specification2));
+		$this->assertFalse($this->specification1->isGeneralizationOf($this->specification2));
 	}
 }
