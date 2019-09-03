@@ -1,13 +1,11 @@
 <?php
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'TestHelper.php';
+namespace PHPAccessControl\Rule;
 
-use \PHPAccessControl\UnitTests\Support\CreateRule;
-use \PHPAccessControl\UnitTests\Support\Situation;
+use PHPAccessControl\CreateRule;
+use PHPAccessControl\TestSituation;
 
-class PHPAccessControl_Rule_SimpleRuleFinderTest extends PHPUnit_Framework_TestCase
+class SimpleRuleFinderTest extends \PHPUnit\Framework\TestCase
 {
 	public function setup()
 	{
@@ -24,12 +22,12 @@ class PHPAccessControl_Rule_SimpleRuleFinderTest extends PHPUnit_Framework_TestC
 	public function mostSpecificMatchingRulesAreTheOnesWithSameSituation()
 	{
 		// given
-		$rule = CreateRule::allow(Situation::UserViewPost());
+		$rule = CreateRule::allow(TestSituation::UserViewPost());
 		$this->ruleList->addRule($rule);
 
 		// when
 		$mostSpecificMatchingRules = $this->ruleFinder->findMostSpecificMatchingRulesFor(
-			Situation::UserViewPost()
+			TestSituation::UserViewPost()
 		);
 
 		// then
@@ -42,12 +40,12 @@ class PHPAccessControl_Rule_SimpleRuleFinderTest extends PHPUnit_Framework_TestC
 	public function mostSpecificMatchingRulesAreTheOnesWithMoreGeneralSituationIfNoneWithSameSituation()
 	{
 		// given
-		$rule = CreateRule::allow(Situation::UserViewPost());
+		$rule = CreateRule::allow(TestSituation::UserViewPost());
 		$this->ruleList->addRule($rule);
 
 		// when
 		$mostSpecificMatchingRules = $this->ruleFinder->findMostSpecificMatchingRulesFor(
-			Situation::UserViewPostWithCategoryIdEquals5()
+			TestSituation::UserViewPostWithCategoryIdEquals5()
 		);
 
 		// then
