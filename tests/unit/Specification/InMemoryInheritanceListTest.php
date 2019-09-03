@@ -1,16 +1,14 @@
 <?php
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'TestHelper.php';
+namespace PHPAccessControl\Specification;
 
 use PHPAccessControl\AccessControledObject\Aco;
 
-class PHPAccessControl_Specification_InMemoryInheritanceListTest extends PHPUnit_Framework_TestCase
+class InMemoryInheritanceListTest extends \PHPUnit\Framework\TestCase
 {
 	public function setup()
 	{
-		$this->inheritanceList = new \PHPAccessControl\Specification\InMemoryInheritanceList();
+		$this->inheritanceList = new InMemoryInheritanceList();
 	}
 
 	/**
