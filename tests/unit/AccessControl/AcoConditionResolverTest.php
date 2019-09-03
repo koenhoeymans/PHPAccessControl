@@ -1,20 +1,18 @@
 <?php
 
+namespace PHPAccessControl;
+
 use PHPAccessControl\AccessControl\AcoConditionResolver;
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'TestHelper.php';
-
-class PHPAccessControl_AcoConditionResolverTest extends PHPUnit_Framework_TestCase
+class AcoConditionResolverTest extends \PHPUnit\Framework\TestCase
 {
 	public function setup()
 	{
-		$this->dsl = new \PHPAccessControl\UnitTests\Support\Dsl();
-		$this->permissionResolver = $this->getMock(
+		$this->dsl = new SupportDsl();
+		$this->permissionResolver = $this->createMock(
 			'\\PHPAccessControl\\AccessControl\\PermissionResolver'
 		);
-		$this->situationStore = $this->getMock(
+		$this->situationStore = $this->createMock(
 			'\\PHPAccessControl\\Situation\\SituationStore'
 		);
 		$this->conditionResolver =
