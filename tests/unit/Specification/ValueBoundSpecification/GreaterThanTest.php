@@ -1,11 +1,8 @@
 <?php
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'TestHelper.php';
+namespace PHPAccessControl\Property\ValueDescription;
 
-class PHPAccessControl_Property_ValueDescription_GreaterThanTest extends PHPUnit_Framework_TestCase
+class GreaterThanTest extends \PHPUnit\Framework\TestCase
 {
 	// ----- is satisfied by -----
 
