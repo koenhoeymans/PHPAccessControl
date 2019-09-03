@@ -1,13 +1,9 @@
 <?php
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'TestHelper.php';
+use PHPAccessControl\TestSituation;
+use PHPAccessControl\CreateRule;
 
-use PHPAccessControl\UnitTests\Support\Situation;
-use PHPAccessControl\UnitTests\Support\CreateRule;
-
-class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framework_TestCase
+class PHPAccessControl_AlgorithmicPermissionResolverTest extends \PHPUnit\Framework\TestCase
 {
 	public function setup()
 	{
@@ -24,7 +20,7 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	public function specificationIsDeniedWhenThereIsNoMatchingRule()
 	{
 		$this->assertFalse(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPost())
+			$this->permissionResolver->isAllowedByInheritance(TestSituation::userViewPost())
 		);
 	}
 
@@ -33,9 +29,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function isAllowedByInheritanceWhenMatchingAllowingRuleExists()
 	{
-		$this->rules->addRule(CreateRule::allow(Situation::userViewPost()));
+		$this->rules->addRule(CreateRule::allow(TestSituation::userViewPost()));
 		$this->assertTrue(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPost())
+			$this->permissionResolver->isAllowedByInheritance(TestSituation::userViewPost())
 		);
 	}
 
@@ -44,9 +40,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function isAllowedByInheritanceWhenMatchingDenyingRuleExists()
 	{
-		$this->rules->addRule(CreateRule::deny(Situation::userViewPost()));
+		$this->rules->addRule(CreateRule::deny(TestSituation::userViewPost()));
 		$this->assertFalse(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPost())
+			$this->permissionResolver->isAllowedByInheritance(TestSituation::userViewPost())
 		);
 	}
 
@@ -55,9 +51,9 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function isAllowedByInheritanceWhenNotAllowedNorDeniedButMoreGeneralSpecificationisAllowedByInheritance()
 	{
-		$this->rules->addRule(CreateRule::allow(Situation::userViewPost()));
+		$this->rules->addRule(CreateRule::allow(TestSituation::userViewPost()));
 		$this->assertTrue(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPostWithCategoryIdEquals5())
+			$this->permissionResolver->isAllowedByInheritance(TestSituation::userViewPostWithCategoryIdEquals5())
 		);
 	}
 
@@ -66,11 +62,11 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function withMultipleLevelsOfAccessRightsTheClosestOneDeterminesInheritedPermission()
 	{
-		$this->rules->addRule(CreateRule::allow(Situation::userViewPost()));
-		$this->rules->addRule(CreateRule::deny(Situation::userViewPostWithCategoryIdEquals5()));
+		$this->rules->addRule(CreateRule::allow(TestSituation::userViewPost()));
+		$this->rules->addRule(CreateRule::deny(TestSituation::userViewPostWithCategoryIdEquals5()));
 		$this->assertFalse(
 			$this->permissionResolver->isAllowedByInheritance(
-				Situation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100()
+				TestSituation::userViewPostWithPostCategoryIdEquals5AndWordCountGreaterThan100()
 			)
 		);
 	}
@@ -80,10 +76,10 @@ class PHPAccessControl_AlgorithmicPermissionResolverTest extends PHPUnit_Framewo
 	 */
 	public function allowedWinsFromDenied()
 	{
-		$this->rules->addRule(CreateRule::deny(Situation::userViewPost()));
-		$this->rules->addRule(CreateRule::allow(Situation::userViewPost()));
+		$this->rules->addRule(CreateRule::deny(TestSituation::userViewPost()));
+		$this->rules->addRule(CreateRule::allow(TestSituation::userViewPost()));
 		$this->assertTrue(
-			$this->permissionResolver->isAllowedByInheritance(Situation::userViewPost())
+			$this->permissionResolver->isAllowedByInheritance(TestSituation::userViewPost())
 		);
 	}
 }
