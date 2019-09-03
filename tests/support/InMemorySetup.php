@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPAccessControl\EndToEndTests\Setup;
+namespace PHPAccessControl;
 
 class InMemorySetup
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPAccessControl\EndToEndTests\Setup;
+namespace PHPAccessControl;
 
 class SetupCreator
 {
@@ -26,7 +26,7 @@ class SetupCreator
 		{
 			if (isset($argv[$setupKey]))
 			{
-				$class = '\\PHPAccessControl\\EndToEndTests\\Setup\\' . $argv[$setupKey];
+				$class = '\\PHPAccessControl\\Setup\\' . $argv[$setupKey];
 				return $class::create();
 			}
 		}

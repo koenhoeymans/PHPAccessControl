@@ -1,16 +1,16 @@
 <?php
 
-require_once('TestHelper.php');
+namespace PHPAccessControl;
 
 /**
  * Takes the example in the Zend Framework ACL documentation as a use case.
  * See http://framework.zend.com/manual/en/zend.acl.html (version 1.10)
  */
-class usageAsRoleBasedAccessControl extends PHPUnit_Framework_TestCase
+class usageAsRoleBasedAccessControl extends \PHPUnit\Framework\TestCase
 {
 	public function setup()
 	{
-		$this->accessControl = \PHPAccessControl\EndToEndTests\Setup\SetupCreator::create();
+		$this->accessControl = SetupCreator::create();
 	}
 
 	/**

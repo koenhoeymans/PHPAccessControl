@@ -1,12 +1,12 @@
 <?php
 
-require_once('TestHelper.php');
+namespace PHPAccessControl;
 
-class PHPAccessControlTest extends PHPUnit_Framework_TestCase
+class PHPAccessControlTest extends \PHPUnit\Framework\TestCase
 {
 	public function setup()
 	{
-		$this->accessControl = \PHPAccessControl\EndToEndTests\Setup\SetupCreator::create();
+		$this->accessControl = SetupCreator::create();
 	}
 
 	/**
