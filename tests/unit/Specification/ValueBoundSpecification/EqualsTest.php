@@ -1,12 +1,8 @@
 <?php
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'TestHelper.php';
+namespace PHPAccessControl\Specification\ValueBoundSpecification;
 
-class PHPAccessControl_Specification_ValueBoundSpecification_EqualsTest
-	extends PHPUnit_Framework_TestCase
+class EqualsTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * @test
