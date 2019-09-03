@@ -1,10 +1,12 @@
 <?php
 
-require_once dirname(__FILE__)
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'TestHelper.php';
+namespace PHPAccessControl\Specification;
 
-class PHPAccessControl_Specification_NotSpecificationTest extends PHPUnit_Framework_TestCase
+use PHPAccessControl\Specification\NotSpecification;
+use PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan;
+use PHPAccessControl\Specification\ValueBoundSpecification\LesserThan;
+
+class NotSpecificationTest extends \PHPUnit\Framework\TestCase
 {
 	// ----- is satisfied by -----
 
@@ -13,8 +15,8 @@ class PHPAccessControl_Specification_NotSpecificationTest extends PHPUnit_Framew
 	 */
 	public function isSatisfiedIfContainingIsNotSatisfied()
 	{
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
-		$notGt2 = new \PHPAccessControl\Specification\NotSpecification($gt2);
+		$gt2 = new GreaterThan(2);
+		$notGt2 = new NotSpecification($gt2);
 		$this->assertTrue($notGt2->isSatisfiedBy(1));
 		$this->assertFalse($notGt2->isSatisfiedBy(3));
 	}
@@ -28,9 +30,9 @@ class PHPAccessControl_Specification_NotSpecificationTest extends PHPUnit_Framew
 	 */
 	public function isSpecialCaseIfContainingIsGeneralization()
 	{
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
-		$lt3 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(3);
-		$notGt2 = new \PHPAccessControl\Specification\NotSpecification($gt2);
+		$gt2 = new GreaterThan(2);
+		$lt3 = new LesserThan(3);
+		$notGt2 = new NotSpecification($gt2);
 		$this->assertTrue($notGt2->isSpecialCaseOf($lt3));
 	}
 
@@ -39,9 +41,9 @@ class PHPAccessControl_Specification_NotSpecificationTest extends PHPUnit_Framew
 	 */
 	public function isGeneralizationIfContainingIsSpecialCase()
 	{
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
-		$lt1 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(1);
-		$notLt1 = new \PHPAccessControl\Specification\NotSpecification($lt1);
+		$gt2 = new GreaterThan(2);
+		$lt1 = new LesserThan(1);
+		$notLt1 = new NotSpecification($lt1);
 		$this->assertTrue($notLt1->isGeneralizationOf($gt2));
 	}
 
@@ -52,8 +54,8 @@ class PHPAccessControl_Specification_NotSpecificationTest extends PHPUnit_Framew
 	 */
 	public function notNotSpecificationIsEqualToSpecification()
 	{
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
-		$notGt2 = new \PHPAccessControl\Specification\NotSpecification($gt2);
+		$gt2 = new GreaterThan(2);
+		$notGt2 = new NotSpecification($gt2);
 		$this->assertEquals($notGt2->not(), $gt2);
 	}
 }
