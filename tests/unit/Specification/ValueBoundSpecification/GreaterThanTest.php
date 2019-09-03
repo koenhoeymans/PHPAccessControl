@@ -2,6 +2,10 @@
 
 namespace PHPAccessControl\Property\ValueDescription;
 
+use PHPAccessControl\Specification\ValueBoundSpecification\Equals;
+use PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan;
+use PHPAccessControl\Specification\ValueBoundSpecification\LesserThan;
+
 class GreaterThanTest extends \PHPUnit\Framework\TestCase
 {
 	// ----- is satisfied by -----
@@ -11,7 +15,7 @@ class GreaterThanTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isSatisfiedByValueInRange()
 	{
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
+		$gt2 = new GreaterThan(2);
 		$this->assertTrue($gt2->isSatisfiedBy(3));
 	}
 
@@ -20,7 +24,7 @@ class GreaterThanTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isNotSatisfiedByValueLessThan()
 	{
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
+		$gt2 = new GreaterThan(2);
 		$this->assertFalse($gt2->isSatisfiedBy(1));
 	}
 
@@ -31,8 +35,8 @@ class GreaterThanTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isSpecialCaseOfGreaterThanSpecificationWithHigherRange()
 	{
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
-		$gt1 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(1);
+		$gt2 = new GreaterThan(2);
+		$gt1 = new GreaterThan(1);
 		$this->assertTrue($gt2->isSpecialCaseOf($gt1));
 		$this->assertFalse($gt1->isSpecialCaseOf($gt2));
 	}
@@ -42,9 +46,9 @@ class GreaterThanTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isGeneralizationOfEqualIfEqualWithinRange()
 	{
-		$eq1 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(1);
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
-		$gt0 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(0);
+		$eq1 = new Equals(1);
+		$gt2 = new GreaterThan(2);
+		$gt0 = new GreaterThan(0);
 		$this->assertTrue($gt0->isGeneralizationOf($eq1));
 		$this->assertFalse($gt2->isGeneralizationOf($eq1));
 	}
@@ -56,9 +60,9 @@ class GreaterThanTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function notLesserThanIsEqualsOrLesserThan()
 	{
-		$eq2 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
-		$lt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(2);
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
+		$eq2 = new Equals(2);
+		$lt2 = new LesserThan(2);
+		$gt2 = new GreaterThan(2);
 		$this->assertTrue($gt2->not()->isEqualTo($eq2->lOr($lt2)));
 	}
 }

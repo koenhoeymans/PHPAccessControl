@@ -2,6 +2,10 @@
 
 namespace PHPAccessControl\Specification\ValueBoundSpecification;
 
+use PHPAccessControl\Specification\ValueBoundSpecification\Equals;
+use PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan;
+use PHPAccessControl\Specification\ValueBoundSpecification\LesserThan;
+
 class EqualsTest extends \PHPUnit\Framework\TestCase
 {
 	/**
@@ -9,7 +13,7 @@ class EqualsTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isSatisfiedByValueItContains()
 	{
-		$eq2 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
+		$eq2 = new Equals(2);
 		$this->assertTrue($eq2->isSatisfiedBy(2));
 	}
 
@@ -18,7 +22,7 @@ class EqualsTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isNotSatisfiedByDifferentValue()
 	{
-		$eq2 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
+		$eq2 = new Equals(2);
 		$this->assertFalse($eq2->isSatisfiedBy(3));
 	}
 
@@ -27,8 +31,8 @@ class EqualsTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isSpecialCaseofEqualIfSameValue()
 	{
-		$eq2a = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
-		$eq2b = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
+		$eq2a = new Equals(2);
+		$eq2b = new Equals(2);
 		$this->assertTrue($eq2a->isSpecialCaseOf($eq2b));
 	}
 
@@ -37,8 +41,8 @@ class EqualsTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isGeneralizationOfEqualIfSameValue()
 	{
-		$eq2a = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
-		$eq2b = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
+		$eq2a = new Equals(2);
+		$eq2b = new Equals(2);
 		$this->assertTrue($eq2a->isGeneralizationOf($eq2b));
 	}
 
@@ -47,8 +51,8 @@ class EqualsTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isSpecialCaseOfLesserThanIfWithingRange()
 	{
-		$lt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(2);
-		$eq1 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(1);
+		$lt2 = new LesserThan(2);
+		$eq1 = new Equals(1);
 		$this->assertTrue($eq1->isSpecialCaseOf($lt2));
 	}
 
@@ -57,8 +61,8 @@ class EqualsTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function isSpecialCaseOfGreaterThanIfWithingRange()
 	{
-		$gt0 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(0);
-		$eq1 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(1);
+		$gt0 = new GreaterThan(0);
+		$eq1 = new Equals(1);
 		$this->assertTrue($eq1->isSpecialCaseOf($gt0));
 	}
 
@@ -67,9 +71,9 @@ class EqualsTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function notEqualsReturnsGreaterThanOrLesserThan()
 	{
-		$eq2 = new \PHPAccessControl\Specification\ValueBoundSpecification\Equals(2);
-		$lt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\LesserThan(2);
-		$gt2 = new \PHPAccessControl\Specification\ValueBoundSpecification\GreaterThan(2);
+		$eq2 = new Equals(2);
+		$lt2 = new LesserThan(2);
+		$gt2 = new GreaterThan(2);
 		$this->assertTrue($eq2->not()->isEqualTo($lt2->lOr($gt2)));
 	}
 }
