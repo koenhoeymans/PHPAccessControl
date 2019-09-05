@@ -4,3 +4,5 @@
 [ ] see todo in GenericSpecificationTest
 [ ] see todo in GenericSpecification.php
 [ ] two errors for GenericSpecificationTest
+[ ] remove autoloader in src
+
