@@ -8,21 +8,21 @@ use PHPAccessControl\Specification\Specification;
 
 class AddParent
 {
-	private $parent;
+    private $parent;
 
-	private $store;
+    private $store;
 
-	private $accessControl;
+    private $accessControl;
 
-	public function __construct(Specification $parent, InheritanceList $store)
-	{
-		$this->parent = $parent;
-		$this->store = $store;
-	}
+    public function __construct(Specification $parent, InheritanceList $store)
+    {
+        $this->parent = $parent;
+        $this->store = $store;
+    }
 
-	public function to(Specification $child)
-	{
-		$this->store->addParent($this->parent, $child);
-		return $this;
-	}
+    public function to(Specification $child)
+    {
+        $this->store->addParent($this->parent, $child);
+        return $this;
+    }
 }
