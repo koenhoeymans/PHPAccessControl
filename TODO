@@ -6,6 +6,7 @@
 [ ] two errors for GenericSpecificationTest
 [ ] remove autoloader in src
 [ ] improve type hinting
+[ ] improve documenting usage in tests
 
 
 # DONE
