@@ -11,21 +11,21 @@ class SupportDsl
 {
     public function situation(Aco $subject, Action $action, Aco $object)
     {
-		return new Situation($subject, $action, $object);
-	}
+        return new Situation($subject, $action, $object);
+    }
 
-	public function action($name)
-	{
-		return new Action($name);	
-	}
+    public function action($name)
+    {
+        return new Action($name);
+    }
 
-	public function aco($name)
-	{
-		return new Aco($name);
-	}
+    public function aco($name)
+    {
+        return new Aco($name);
+    }
 
-	public function property($name)
-	{
-		return new PropertyDSL($name);
-	}
+    public function property($name)
+    {
+        return new PropertyDSL($name);
+    }
 }
