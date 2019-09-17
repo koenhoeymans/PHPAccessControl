@@ -4,5 +4,5 @@ namespace PHPAccessControl\Rule;
 
 interface RuleListObserver
 {
-	public function notifyRuleAdded(SituationBasedRule $rule);
+    public function notifyRuleAdded(SituationBasedRule $rule);
 }

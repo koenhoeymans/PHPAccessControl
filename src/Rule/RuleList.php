@@ -4,9 +4,9 @@ namespace PHPAccessControl\Rule;
 
 interface RuleList
 {
-	public function addObserver(RuleListObserver $observer);
+    public function addObserver(RuleListObserver $observer);
 
-	public function addRule(SituationBasedRule $rule);
+    public function addRule(SituationBasedRule $rule);
 
-	public function getAllRules();
+    public function getAllRules();
 }
