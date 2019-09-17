@@ -5,4 +5,6 @@
 [ ] see todo in GenericSpecification.php
 [ ] two errors for GenericSpecificationTest
 [ ] remove autoloader in src
+[ ] PSR1 and PSR2 compliance
+[ ] improve type hinting
 
